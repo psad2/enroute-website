@@ -1,10 +1,543 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
-  <title>$Title$</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Register — En Route Virtual Airline</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+
+      :root {
+          --ink: #0A0D12;
+          --navy-deep: #0E1B2C;
+          --navy-mid: #132840;
+
+          --amber: #6FA8DC;
+          --cyan: #C7DEF5;
+
+          --text: #ECEFF3;
+          --text-muted: #8FA0B5;
+
+          --line: rgba(255,255,255,.10);
+
+          --red: #D87878;
+          --green: #65C79A;
+
+          --display: 'Space Grotesk', sans-serif;
+          --body: 'Inter', sans-serif;
+          --mono: 'IBM Plex Mono', monospace;
+      }
+
+      * {
+          box-sizing: border-box;
+      }
+
+      body {
+          margin: 0;
+
+          min-height: 100vh;
+
+          display: flex;
+          align-items: center;
+          justify-content: center;
+
+          background: var(--ink);
+
+          color: var(--text);
+          font-family: var(--body);
+      }
+
+      .register-box {
+          width: 100%;
+          max-width: 440px;
+
+          margin: 20px;
+
+          border: 1px solid var(--line);
+
+          background: var(--navy-deep);
+
+          box-shadow: 0 30px 80px rgba(0,0,0,.45);
+      }
+
+      .header {
+          padding: 25px;
+
+          border-bottom: 1px solid var(--line);
+      }
+
+      .brand {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+
+          margin-bottom: 30px;
+      }
+
+      .badge {
+          padding: 4px 7px;
+
+          border: 1px solid var(--amber);
+
+          color: var(--amber);
+
+          font-family: var(--mono);
+          font-size: 12px;
+          font-weight: 600;
+      }
+
+      .brand-name {
+          font-family: var(--display);
+          font-size: 18px;
+          font-weight: 700;
+      }
+
+      .eyebrow {
+          margin-bottom: 10px;
+
+          color: var(--amber);
+
+          font-family: var(--mono);
+          font-size: 10px;
+          letter-spacing: .15em;
+          text-transform: uppercase;
+      }
+
+      h1 {
+          margin: 0;
+
+          font-family: var(--display);
+          font-size: 32px;
+      }
+
+      .description {
+          margin: 10px 0 0;
+
+          color: var(--text-muted);
+
+          font-size: 13px;
+          line-height: 1.6;
+      }
+
+      .form {
+          padding: 25px;
+      }
+
+      .field {
+          margin-bottom: 18px;
+      }
+
+      label {
+          display: block;
+
+          margin-bottom: 7px;
+
+          color: var(--text-muted);
+
+          font-family: var(--mono);
+          font-size: 9px;
+          letter-spacing: .08em;
+          text-transform: uppercase;
+      }
+
+      input {
+          width: 100%;
+
+          padding: 12px 13px;
+
+          border: 1px solid var(--line);
+
+          outline: none;
+
+          background: rgba(0,0,0,.2);
+
+          color: var(--text);
+
+          font-family: var(--body);
+      }
+
+      input:focus {
+          border-color: var(--amber);
+      }
+
+      .pilot-info {
+          margin: 20px 0;
+
+          padding: 13px;
+
+          border-left: 2px solid var(--amber);
+
+          background: rgba(111,168,220,.06);
+
+          color: var(--text-muted);
+
+          font-size: 11px;
+          line-height: 1.5;
+      }
+
+      .submit {
+          width: 100%;
+
+          padding: 13px;
+
+          border: 1px solid var(--amber);
+
+          background: var(--amber);
+
+          color: var(--ink);
+
+          font-family: var(--mono);
+          font-size: 10px;
+          font-weight: 600;
+          letter-spacing: .08em;
+          text-transform: uppercase;
+
+          cursor: pointer;
+      }
+
+      .submit:hover {
+          background: #91BCE4;
+      }
+
+      .submit:disabled {
+          opacity: .5;
+          cursor: wait;
+      }
+
+      .message {
+          display: none;
+
+          margin-bottom: 18px;
+
+          padding: 11px;
+
+          border: 1px solid var(--red);
+
+          color: var(--red);
+
+          font-family: var(--mono);
+          font-size: 10px;
+      }
+
+      .message.success {
+          border-color: var(--green);
+          color: var(--green);
+      }
+
+      .message.show {
+          display: block;
+      }
+
+      .login {
+          margin-top: 20px;
+
+          text-align: center;
+
+          color: var(--text-muted);
+
+          font-size: 11px;
+      }
+
+      .login a {
+          color: var(--amber);
+      }
+
+      .back {
+          display: block;
+
+          margin-top: 10px;
+
+          text-align: center;
+
+          color: var(--text-muted);
+
+          font-family: var(--mono);
+          font-size: 9px;
+          text-transform: uppercase;
+      }
+
+      .back:hover {
+          color: var(--text);
+      }
+
+  </style>
 </head>
+
 <body>
-$END$
+
+<div class="register-box">
+
+  <div class="header">
+
+    <div class="brand">
+      <span class="badge">ERT</span>
+      <span class="brand-name">EN ROUTE</span>
+    </div>
+
+    <div class="eyebrow">
+      Crew Registration
+    </div>
+
+    <h1>Join En Route</h1>
+
+    <p class="description">
+      Create your pilot account to participate in the
+      En Route community and access the pilot forums.
+    </p>
+
+  </div>
+
+
+  <form class="form" id="registerForm">
+
+    <div class="message" id="message"></div>
+
+
+    <div class="field">
+
+      <label for="username">
+        Pilot Username
+      </label>
+
+      <input
+        id="username"
+        type="text"
+        placeholder="Paul"
+        minlength="3"
+        maxlength="32"
+        autocomplete="username"
+        required
+      >
+
+    </div>
+
+
+    <div class="field">
+
+      <label for="email">
+        Email Address
+      </label>
+
+      <input
+        id="email"
+        type="email"
+        placeholder="pilot@example.com"
+        autocomplete="email"
+        required
+      >
+
+    </div>
+
+
+    <div class="field">
+
+      <label for="password">
+        Password
+      </label>
+
+      <input
+        id="password"
+        type="password"
+        placeholder="Minimum 8 characters"
+        minlength="8"
+        autocomplete="new-password"
+        required
+      >
+
+    </div>
+
+
+    <div class="field">
+
+      <label for="passwordConfirm">
+        Confirm Password
+      </label>
+
+      <input
+        id="passwordConfirm"
+        type="password"
+        placeholder="Repeat your password"
+        minlength="8"
+        autocomplete="new-password"
+        required
+      >
+
+    </div>
+
+
+    <div class="pilot-info">
+      Your En Route pilot ID will be generated automatically
+      after registration.
+    </div>
+
+
+    <button
+      type="submit"
+      class="submit"
+      id="submitButton"
+    >
+      Create Pilot Account →
+    </button>
+
+
+    <div class="login">
+      Already have an account?
+      <a href="forums.html">
+        Return to login
+      </a>
+    </div>
+
+    <a href="index.html" class="back">
+      ← Back to En Route
+    </a>
+
+  </form>
+
+</div>
+
+
+<script>
+
+  const form =
+    document.getElementById("registerForm");
+
+  const message =
+    document.getElementById("message");
+
+  const submitButton =
+    document.getElementById("submitButton");
+
+
+  function showMessage(text, success = false) {
+
+    message.textContent = text;
+
+    message.classList.add("show");
+
+    if (success) {
+      message.classList.add("success");
+    } else {
+      message.classList.remove("success");
+    }
+  }
+
+
+  form.addEventListener("submit", async function(event) {
+
+    event.preventDefault();
+
+
+    const username =
+      document.getElementById("username").value.trim();
+
+    const email =
+      document.getElementById("email").value.trim();
+
+    const password =
+      document.getElementById("password").value;
+
+    const passwordConfirm =
+      document.getElementById("passwordConfirm").value;
+
+
+    if (password !== passwordConfirm) {
+
+      showMessage(
+        "Passwords do not match."
+      );
+
+      return;
+    }
+
+
+    submitButton.disabled = true;
+
+    submitButton.textContent =
+      "Creating Account...";
+
+
+    try {
+
+      const response = await fetch(
+        "http://127.0.0.1:5000/api/register",
+        {
+          method: "POST",
+
+          headers: {
+            "Content-Type": "application/json"
+          },
+
+          body: JSON.stringify({
+            username: username,
+            email: email,
+            password: password
+          })
+        }
+      );
+
+
+      const data =
+        await response.json();
+
+
+      if (!response.ok) {
+
+        showMessage(
+          data.error || "Registration failed."
+        );
+
+        submitButton.disabled = false;
+
+        submitButton.textContent =
+          "Create Pilot Account →";
+
+        return;
+      }
+
+
+      showMessage(
+        "Account created successfully. You can now log in.",
+        true
+      );
+
+
+      form.reset();
+
+
+      setTimeout(function() {
+
+        window.location.href =
+          "forums.html";
+
+      }, 1800);
+
+
+    } catch (error) {
+
+      console.error(error);
+
+      showMessage(
+        "Could not connect to the En Route server."
+      );
+
+      submitButton.disabled = false;
+
+      submitButton.textContent =
+        "Create Pilot Account →";
+    }
+
+  });
+
+</script>
+
 </body>
 </html>
+```
