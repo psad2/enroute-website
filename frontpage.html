@@ -421,7 +421,7 @@
     <a href="#crew">Crew</a>
     <a href="#about">About</a>
     <a href="#">Route Map</a>
-    <a href="#">Careers</a>
+    <a href="register.html">Careers</a>
   </nav>
   <a href="#" class="book-btn">Book a Flight <span class="arrow">→</span></a>
 </header>
@@ -439,7 +439,9 @@
     <p class="hero-tagline">A virtual airline for pilots who fly for the love of it. <strong>Real routes, real weather, real crew</strong> — zero real consequences.</p>
     <div class="hero-ctas">
       <a href="#fleet" class="link-cta primary">View Fleet <span class="arrow">→</span></a>
-      <a href="#crew" class="link-cta">Join the Crew <span class="arrow">→</span></a>
+      <a href="register.html" class="link-cta">
+        Join the Crew <span class="arrow">→</span>
+      </a>
     </div>
   </div>
   <div class="scroll-cue"><span class="chev"></span>SCROLL</div>
@@ -499,13 +501,9 @@
       <h2>Volunteers who keep the wheels up.</h2>
       <p>Every flight in the En Route network is flown, dispatched and supported by real people, on their own time, for the fun of it.</p>
     </div>
-    <div class="crew-grid reveal-stagger">
-      <div class="crew-card">
-        <div class="avatar">JM</div>
-        <div class="crew-name">Placeholder Name</div>
-        <div class="crew-role">Founder &amp; CEO</div>
-        <div class="crew-id">CREW ID · ERT-0001</div>
-      </div>
+    <div id="crew-list" class="crew-grid reveal-stagger">
+      <p>Loading crew...</p>
+    </div>
       <div class="crew-card">
         <div class="avatar">AK</div>
         <div class="crew-name">Placeholder Name</div>
@@ -682,6 +680,77 @@
   waypointEls.forEach(el=>activeIO.observe(el));
 
   onScroll();
+
+  // =========================================================
+  // LOAD CREW FROM PYTHON BACKEND
+  // =========================================================
+
+  async function loadCrew() {
+
+    const crewList = document.getElementById("crew-list");
+
+    try {
+
+      const response = await fetch("/api/crew");
+
+      if (!response.ok) {
+        throw new Error("Failed to load crew");
+      }
+
+      const crew = await response.json();
+
+      crewList.innerHTML = "";
+
+      if (crew.length === 0) {
+
+        crewList.innerHTML = `
+                <p>No crew members yet.</p>
+            `;
+
+        return;
+      }
+
+      crew.forEach(member => {
+
+        const card = document.createElement("div");
+
+        card.className = "crew-card";
+
+        card.innerHTML = `
+                <div class="avatar">
+                    ${member.initials}
+                </div>
+
+                <div class="crew-name">
+                    ${member.username}
+                </div>
+
+                <div class="crew-role">
+                    ${member.role}
+                </div>
+
+                <div class="crew-id">
+                    CREW ID · ERT-${String(member.id).padStart(4, "0")}
+                </div>
+            `;
+
+        crewList.appendChild(card);
+      });
+
+      // Make the cards visible
+      crewList.classList.add("is-visible");
+
+    } catch (error) {
+
+      console.error(error);
+
+      crewList.innerHTML = `
+            <p>Unable to load crew.</p>
+        `;
+    }
+  }
+
+  loadCrew();
 </script>
 
 </body>

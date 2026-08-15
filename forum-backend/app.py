@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 import sqlite3
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -13,9 +13,9 @@ def db():
     return connection
 
 
-# ---------------------------------------------------------
+# =========================================================
 # DATABASE
-# ---------------------------------------------------------
+# =========================================================
 
 def init_db():
     connection = db()
@@ -24,12 +24,13 @@ def init_db():
         CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             username TEXT UNIQUE NOT NULL,
+            email TEXT UNIQUE NOT NULL,
             password TEXT NOT NULL
         );
 
         CREATE TABLE IF NOT EXISTS categories (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT NOT NULL
+            name TEXT UNIQUE NOT NULL
         );
 
         CREATE TABLE IF NOT EXISTS threads (
@@ -50,7 +51,6 @@ def init_db():
         );
     """)
 
-    # Default categories
     categories = [
         "General Operations",
         "Flight Operations",
@@ -72,17 +72,23 @@ def init_db():
     connection.close()
 
 
-# ---------------------------------------------------------
+# =========================================================
 # REGISTER
-# ---------------------------------------------------------
+# =========================================================
+
 @app.post("/api/register")
 def register():
 
-    data = request.json
+    data = request.get_json()
 
-    username = data["username"]
-    email = data["email"]
-    password = data["password"]
+    username = data.get("username")
+    email = data.get("email")
+    password = data.get("password")
+
+    if not username or not email or not password:
+        return jsonify({
+            "error": "All fields are required"
+        }), 400
 
     if len(password) < 8:
         return jsonify({
@@ -118,19 +124,20 @@ def register():
 
     return jsonify({
         "message": "Account created"
-    })
+    }), 201
 
-# ---------------------------------------------------------
+
+# =========================================================
 # LOGIN
-# ---------------------------------------------------------
+# =========================================================
 
 @app.post("/api/login")
 def login():
 
-    data = request.json
+    data = request.get_json()
 
-    username = data["username"]
-    password = data["password"]
+    username = data.get("username")
+    password = data.get("password")
 
     connection = db()
 
@@ -145,12 +152,7 @@ def login():
 
     connection.close()
 
-    if not user:
-        return jsonify({
-            "error": "Invalid username or password"
-        }), 401
-
-    if not check_password_hash(
+    if not user or not check_password_hash(
         user["password"],
         password
     ):
@@ -165,9 +167,9 @@ def login():
     })
 
 
-# ---------------------------------------------------------
+# =========================================================
 # CATEGORIES
-# ---------------------------------------------------------
+# =========================================================
 
 @app.get("/api/categories")
 def categories():
@@ -175,7 +177,7 @@ def categories():
     connection = db()
 
     rows = connection.execute(
-        "SELECT * FROM categories"
+        "SELECT * FROM categories ORDER BY name"
     ).fetchall()
 
     connection.close()
@@ -186,9 +188,9 @@ def categories():
     ])
 
 
-# ---------------------------------------------------------
+# =========================================================
 # THREADS
-# ---------------------------------------------------------
+# =========================================================
 
 @app.get("/api/threads")
 def threads():
@@ -204,13 +206,10 @@ def threads():
             users.username,
             categories.name AS category
         FROM threads
-
         JOIN users
             ON users.id = threads.user_id
-
         JOIN categories
             ON categories.id = threads.category_id
-
         ORDER BY threads.created_at DESC
     """).fetchall()
 
@@ -222,31 +221,31 @@ def threads():
     ])
 
 
-# ---------------------------------------------------------
+# =========================================================
 # CREATE THREAD
-# ---------------------------------------------------------
+# =========================================================
 
 @app.post("/api/threads")
 def create_thread():
 
-    data = request.json
+    data = request.get_json()
 
-    title = data["title"]
-    content = data["content"]
-    user_id = data["user_id"]
-    category_id = data["category_id"]
+    title = data.get("title")
+    content = data.get("content")
+    user_id = data.get("user_id")
+    category_id = data.get("category_id")
+
+    if not title or not content or not user_id or not category_id:
+        return jsonify({
+            "error": "All fields are required"
+        }), 400
 
     connection = db()
 
     cursor = connection.execute(
         """
         INSERT INTO threads
-        (
-            title,
-            content,
-            user_id,
-            category_id
-        )
+        (title, content, user_id, category_id)
         VALUES (?, ?, ?, ?)
         """,
         (
@@ -269,9 +268,9 @@ def create_thread():
     }), 201
 
 
-# ---------------------------------------------------------
+# =========================================================
 # GET THREAD
-# ---------------------------------------------------------
+# =========================================================
 
 @app.get("/api/threads/<int:thread_id>")
 def get_thread(thread_id):
@@ -283,15 +282,11 @@ def get_thread(thread_id):
             threads.*,
             users.username,
             categories.name AS category
-
         FROM threads
-
         JOIN users
             ON users.id = threads.user_id
-
         JOIN categories
             ON categories.id = threads.category_id
-
         WHERE threads.id = ?
     """, (thread_id,)).fetchone()
 
@@ -306,14 +301,10 @@ def get_thread(thread_id):
         SELECT
             posts.*,
             users.username
-
         FROM posts
-
         JOIN users
             ON users.id = posts.user_id
-
         WHERE thread_id = ?
-
         ORDER BY posts.created_at
     """, (thread_id,)).fetchall()
 
@@ -328,28 +319,29 @@ def get_thread(thread_id):
     })
 
 
-# ---------------------------------------------------------
+# =========================================================
 # REPLY
-# ---------------------------------------------------------
+# =========================================================
 
 @app.post("/api/threads/<int:thread_id>/reply")
 def reply(thread_id):
 
-    data = request.json
+    data = request.get_json()
 
-    content = data["content"]
-    user_id = data["user_id"]
+    content = data.get("content")
+    user_id = data.get("user_id")
+
+    if not content or not user_id:
+        return jsonify({
+            "error": "Content and user are required"
+        }), 400
 
     connection = db()
 
     connection.execute(
         """
         INSERT INTO posts
-        (
-            thread_id,
-            content,
-            user_id
-        )
+        (thread_id, content, user_id)
         VALUES (?, ?, ?)
         """,
         (
@@ -366,10 +358,55 @@ def reply(thread_id):
         "message": "Reply posted"
     }), 201
 
+# =========================================================
+# CREW
+# =========================================================
 
-# ---------------------------------------------------------
-# START SERVER
-# ---------------------------------------------------------
+@app.get("/api/crew")
+def crew():
+
+    connection = db()
+
+    rows = connection.execute("""
+        SELECT
+            id,
+            username
+        FROM users
+        ORDER BY id ASC
+    """).fetchall()
+
+    connection.close()
+
+    crew_list = []
+
+    for row in rows:
+        username = row["username"]
+
+        # Get first two letters for avatar
+        initials = username[:2].upper()
+
+        crew_list.append({
+            "id": row["id"],
+            "username": username,
+            "initials": initials,
+            "role": "Pilot"
+        })
+
+    return jsonify(crew_list)
+
+
+# =========================================================
+# FRONT PAGE
+# =========================================================
+
+@app.route("/")
+def home():
+    return send_from_directory("..", "frontpage.html")
+
+
+# =========================================================
+# START
+# =========================================================
 
 if __name__ == "__main__":
 
