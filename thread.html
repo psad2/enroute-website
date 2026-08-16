@@ -2,9 +2,4056 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>$Title$</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Thread — En Route Virtual Airline</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet"
+  >
+
+  <style>
+      :root {
+          --ink: #0A0D12;
+          --navy-deep: #0E1B2C;
+          --navy-mid: #132840;
+
+          --amber: #6FA8DC;
+          --amber-hover: #91BCE4;
+
+          --text: #ECEFF3;
+          --text-muted: #8FA0B5;
+
+          --line: rgba(255,255,255,.10);
+
+          --green: #65C79A;
+          --red: #D87878;
+          --orange: #D9A15E;
+          --purple: #B58CFF;
+
+          --display: 'Space Grotesk', sans-serif;
+          --body: 'Inter', sans-serif;
+          --mono: 'IBM Plex Mono', monospace;
+      }
+
+      * {
+          box-sizing: border-box;
+      }
+
+      html {
+          scroll-behavior: smooth;
+      }
+
+      body {
+          margin: 0;
+          background: var(--ink);
+          color: var(--text);
+          font-family: var(--body);
+          line-height: 1.6;
+      }
+
+      body.modal-open {
+          overflow: hidden;
+      }
+
+      button,
+      input,
+      textarea {
+          font: inherit;
+      }
+
+      button {
+          cursor: pointer;
+      }
+
+      button:disabled {
+          cursor: not-allowed;
+          opacity: .5;
+      }
+
+      a {
+          color: inherit;
+          text-decoration: none;
+      }
+
+      /* =====================================================
+         HEADER
+      ===================================================== */
+
+      header {
+          position: sticky;
+          top: 0;
+          z-index: 100;
+
+          height: 72px;
+
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+
+          padding: 0 40px;
+
+          background: rgba(10,13,18,.92);
+          backdrop-filter: blur(14px);
+
+          border-bottom: 1px solid var(--line);
+      }
+
+      .brand {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+      }
+
+      .brand-badge {
+          padding: 4px 7px;
+
+          border: 1px solid var(--amber);
+
+          color: var(--amber);
+
+          font-family: var(--mono);
+          font-size: 12px;
+          font-weight: 600;
+      }
+
+      .brand-word {
+          font-family: var(--display);
+          font-size: 18px;
+          font-weight: 700;
+      }
+
+      nav {
+          display: flex;
+          gap: 30px;
+      }
+
+      nav a {
+          color: var(--text-muted);
+
+          font-family: var(--mono);
+          font-size: 11px;
+
+          letter-spacing: .08em;
+          text-transform: uppercase;
+      }
+
+      nav a:hover,
+      nav a.active {
+          color: var(--text);
+      }
+
+      .header-user button {
+          border: 1px solid var(--amber);
+
+          background: transparent;
+          color: var(--amber);
+
+          padding: 9px 15px;
+
+          font-family: var(--mono);
+          font-size: 10px;
+
+          letter-spacing: .08em;
+          text-transform: uppercase;
+      }
+
+      .header-user button:hover {
+          background: var(--amber);
+          color: var(--ink);
+      }
+
+      /* =====================================================
+         MAIN
+      ===================================================== */
+
+      main {
+          min-height: calc(100vh - 72px);
+          padding: 55px 40px 100px;
+      }
+
+      .container {
+          max-width: 1100px;
+          margin: auto;
+      }
+
+      /* =====================================================
+         BREADCRUMB
+      ===================================================== */
+
+      .breadcrumb {
+          display: flex;
+          gap: 10px;
+
+          margin-bottom: 28px;
+
+          color: var(--text-muted);
+
+          font-family: var(--mono);
+          font-size: 10px;
+
+          letter-spacing: .08em;
+          text-transform: uppercase;
+      }
+
+      .breadcrumb a {
+          color: var(--amber);
+      }
+
+      /* =====================================================
+         SEARCH
+      ===================================================== */
+
+      .search-box {
+          display: flex;
+          gap: 8px;
+          margin-bottom: 25px;
+      }
+
+      .search-box input {
+          flex: 1;
+
+          padding: 12px 14px;
+
+          border: 1px solid var(--line);
+
+          background: rgba(255,255,255,.02);
+
+          color: var(--text);
+
+          outline: none;
+      }
+
+      .search-box input:focus {
+          border-color: var(--amber);
+      }
+
+      .search-box button {
+          padding: 10px 16px;
+
+          border: 1px solid var(--amber);
+
+          background: var(--amber);
+          color: var(--ink);
+
+          font-family: var(--mono);
+          font-size: 9px;
+      }
+
+      /* =====================================================
+         THREAD HEADER
+      ===================================================== */
+
+      .thread-header {
+          margin-bottom: 25px;
+      }
+
+      .thread-category {
+          margin-bottom: 10px;
+
+          color: var(--amber);
+
+          font-family: var(--mono);
+          font-size: 10px;
+
+          letter-spacing: .12em;
+          text-transform: uppercase;
+      }
+
+      .thread-title {
+          margin: 0;
+
+          font-family: var(--display);
+          font-size: clamp(32px, 5vw, 52px);
+
+          line-height: 1.05;
+          letter-spacing: -.025em;
+      }
+
+      .thread-meta {
+          display: flex;
+          gap: 15px;
+          flex-wrap: wrap;
+
+          margin-top: 14px;
+
+          color: var(--text-muted);
+
+          font-family: var(--mono);
+          font-size: 10px;
+      }
+
+      .thread-controls {
+          display: flex;
+          gap: 8px;
+          flex-wrap: wrap;
+
+          margin-top: 20px;
+      }
+
+      .control-button {
+          padding: 8px 12px;
+
+          border: 1px solid var(--line);
+
+          background: transparent;
+          color: var(--text-muted);
+
+          font-family: var(--mono);
+          font-size: 9px;
+
+          letter-spacing: .08em;
+          text-transform: uppercase;
+      }
+
+      .control-button:hover {
+          border-color: var(--amber);
+          color: var(--amber);
+      }
+
+      .control-button.danger:hover {
+          border-color: var(--red);
+          color: var(--red);
+      }
+
+      /* =====================================================
+         POSTS
+      ===================================================== */
+
+      .post {
+          display: grid;
+          grid-template-columns: 180px minmax(0, 1fr);
+
+          margin-bottom: 18px;
+
+          border: 1px solid var(--line);
+
+          background: rgba(255,255,255,.015);
+
+          transition: border-color .15s;
+      }
+
+      .post:hover {
+          border-color: rgba(255,255,255,.16);
+      }
+
+      .post.reply-post {
+          margin-left: 45px;
+          position: relative;
+      }
+
+      .post.reply-post::before {
+          content: "";
+
+          position: absolute;
+
+          left: -25px;
+          top: 0;
+          bottom: 0;
+
+          width: 1px;
+
+          background: var(--line);
+      }
+
+      .post-user {
+          padding: 22px;
+
+          border-right: 1px solid var(--line);
+
+          background: rgba(255,255,255,.018);
+      }
+
+      /* =====================================================
+         ROLES
+      ===================================================== */
+
+      .post-role {
+          margin-top: 4px;
+
+          font-family: var(--mono);
+          font-size: 9px;
+
+          letter-spacing: .06em;
+          text-transform: uppercase;
+      }
+
+      .post-role.pilot {
+          color: var(--text-muted);
+      }
+
+      .post-role.navy {
+          color: #6FA8DC;
+          font-weight: 600;
+      }
+
+      .post-role.moderator {
+          color: #D9A15E;
+          font-weight: 700;
+      }
+
+      .post-role.administrator {
+          color: #D87878;
+          font-weight: 700;
+      }
+
+      .post-role.staff {
+          color: var(--purple);
+          font-weight: 600;
+      }
+
+      .role-badge {
+          display: inline-block;
+
+          margin-left: 7px;
+
+          font-family: var(--mono);
+          font-size: 8px;
+          font-weight: 700;
+
+          letter-spacing: .06em;
+          text-transform: uppercase;
+      }
+
+      .role-badge.navy {
+          color: #6FA8DC;
+      }
+
+      .role-badge.moderator {
+          color: #D9A15E;
+      }
+
+      .role-badge.administrator {
+          color: #D87878;
+      }
+
+      .role-badge.staff {
+          color: var(--purple);
+      }
+
+      .avatar {
+          width: 52px;
+          height: 52px;
+
+          display: flex;
+          align-items: center;
+          justify-content: center;
+
+          margin-bottom: 12px;
+
+          border-radius: 50%;
+
+          background: var(--navy-mid);
+
+          border: 1px solid var(--amber);
+
+          color: var(--amber);
+
+          font-family: var(--mono);
+          font-size: 12px;
+          font-weight: 600;
+      }
+
+      .avatar:hover {
+          background: var(--amber);
+          color: var(--ink);
+      }
+
+      .post-username {
+          font-family: var(--display);
+          font-size: 14px;
+          font-weight: 600;
+      }
+
+      .post-username:hover {
+          color: var(--amber);
+      }
+
+      .post-stats {
+          margin-top: 12px;
+
+          color: var(--text-muted);
+
+          font-family: var(--mono);
+          font-size: 8px;
+      }
+
+      .post-content {
+          min-width: 0;
+      }
+
+      .post-top {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+
+          padding: 12px 18px;
+
+          border-bottom: 1px solid var(--line);
+
+          color: var(--text-muted);
+
+          font-family: var(--mono);
+          font-size: 9px;
+      }
+
+      .post-number {
+          color: var(--amber);
+      }
+
+      .post-message {
+          padding: 22px;
+
+          font-size: 14px;
+          line-height: 1.75;
+
+          overflow-wrap: anywhere;
+          word-break: break-word;
+      }
+
+      .post-message code {
+          display: inline-block;
+
+          padding: 2px 5px;
+
+          background: rgba(0,0,0,.35);
+
+          border: 1px solid var(--line);
+
+          font-family: var(--mono);
+          font-size: 12px;
+      }
+
+      /* =====================================================
+         QUOTES
+      ===================================================== */
+
+      .quote {
+          position: relative;
+
+          margin: 0 0 15px;
+          padding: 12px 15px;
+
+          border-left: 3px solid var(--amber);
+
+          background: rgba(111,168,220,.05);
+
+          color: var(--text-muted);
+      }
+
+      .quote-author {
+          margin-bottom: 6px;
+
+          color: var(--amber);
+
+          font-family: var(--mono);
+          font-size: 9px;
+
+          letter-spacing: .08em;
+          text-transform: uppercase;
+      }
+
+      .quote-content {
+          overflow-wrap: anywhere;
+          word-break: break-word;
+      }
+
+      .quote strong {
+          color: var(--text);
+      }
+
+      .quote code {
+          padding: 2px 5px;
+
+          border: 1px solid var(--line);
+
+          background: rgba(0,0,0,.25);
+
+          font-family: var(--mono);
+          font-size: 11px;
+      }
+
+      /* =====================================================
+         POST ACTIONS
+      ===================================================== */
+
+      .post-actions {
+          display: flex;
+          align-items: center;
+          gap: 7px;
+          flex-wrap: wrap;
+
+          padding: 10px 18px;
+
+          border-top: 1px solid var(--line);
+      }
+
+      .post-action {
+          padding: 6px 9px;
+
+          border: 1px solid transparent;
+
+          background: transparent;
+          color: var(--text-muted);
+
+          font-family: var(--mono);
+          font-size: 9px;
+      }
+
+      .post-action:hover {
+          border-color: var(--line);
+          color: var(--text);
+      }
+
+      .post-action.danger:hover {
+          border-color: var(--red);
+          color: var(--red);
+      }
+
+      .reactions {
+          display: flex;
+          gap: 5px;
+          flex-wrap: wrap;
+
+          margin-right: auto;
+      }
+
+      .reaction {
+          padding: 5px 8px;
+
+          border: 1px solid var(--line);
+
+          background: rgba(255,255,255,.02);
+
+          color: var(--text-muted);
+
+          font-family: var(--mono);
+          font-size: 9px;
+
+          transition:
+                  border-color .15s,
+                  color .15s,
+                  background .15s;
+      }
+
+      .reaction:hover,
+      .reaction.active {
+          border-color: var(--amber);
+          color: var(--amber);
+      }
+
+      .reaction.active {
+          background: rgba(111,168,220,.08);
+      }
+
+      /* =====================================================
+         REPLY
+      ===================================================== */
+
+      .reply-section {
+          margin-top: 40px;
+      }
+
+      .reply-title {
+          margin-bottom: 12px;
+
+          color: var(--amber);
+
+          font-family: var(--mono);
+          font-size: 10px;
+
+          letter-spacing: .12em;
+          text-transform: uppercase;
+      }
+
+      .reply-box {
+          border: 1px solid var(--line);
+
+          background: rgba(255,255,255,.015);
+
+          padding: 20px;
+      }
+
+      .replying-to {
+          display: none;
+
+          margin-bottom: 12px;
+
+          padding: 10px 12px;
+
+          border-left: 2px solid var(--amber);
+
+          background: rgba(111,168,220,.05);
+
+          color: var(--text-muted);
+
+          font-family: var(--mono);
+          font-size: 9px;
+      }
+
+      .replying-to button {
+          float: right;
+
+          border: 0;
+
+          background: transparent;
+          color: var(--red);
+
+          font-size: 12px;
+      }
+
+      .reply-login {
+          color: var(--text-muted);
+
+          font-size: 13px;
+      }
+
+      .reply-login button {
+          margin-top: 14px;
+
+          padding: 10px 16px;
+
+          border: 1px solid var(--amber);
+
+          background: transparent;
+          color: var(--amber);
+
+          font-family: var(--mono);
+          font-size: 10px;
+
+          letter-spacing: .08em;
+          text-transform: uppercase;
+      }
+
+      textarea {
+          width: 100%;
+
+          min-height: 160px;
+
+          resize: vertical;
+
+          padding: 14px;
+
+          border: 1px solid var(--line);
+
+          background: rgba(0,0,0,.2);
+
+          color: var(--text);
+
+          outline: none;
+      }
+
+      textarea:focus {
+          border-color: var(--amber);
+      }
+
+      .reply-submit {
+          margin-top: 12px;
+
+          padding: 11px 18px;
+
+          border: 1px solid var(--amber);
+
+          background: var(--amber);
+          color: var(--ink);
+
+          font-family: var(--mono);
+          font-size: 10px;
+          font-weight: 600;
+
+          letter-spacing: .08em;
+          text-transform: uppercase;
+      }
+
+      .reply-submit:hover {
+          background: var(--amber-hover);
+      }
+
+      /* =====================================================
+         PAGINATION
+      ===================================================== */
+
+      .pagination {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          gap: 6px;
+
+          margin: 30px 0;
+      }
+
+      .page-button {
+          min-width: 34px;
+          height: 34px;
+
+          border: 1px solid var(--line);
+
+          background: transparent;
+          color: var(--text-muted);
+
+          font-family: var(--mono);
+          font-size: 9px;
+      }
+
+      .page-button:hover,
+      .page-button.active {
+          border-color: var(--amber);
+          color: var(--amber);
+      }
+
+      /* =====================================================
+         STATUS
+      ===================================================== */
+
+      .status {
+          padding: 25px;
+
+          border: 1px solid var(--line);
+
+          color: var(--text-muted);
+
+          text-align: center;
+      }
+
+      .status.error {
+          border-color: var(--red);
+          color: var(--red);
+      }
+
+      .locked-banner {
+          margin-bottom: 20px;
+
+          padding: 12px 15px;
+
+          border: 1px solid var(--orange);
+
+          color: var(--orange);
+
+          font-family: var(--mono);
+          font-size: 9px;
+
+          text-transform: uppercase;
+      }
+
+      /* =====================================================
+         PROFILE MODAL
+      ===================================================== */
+
+      .modal {
+          position: fixed;
+          inset: 0;
+
+          z-index: 2000;
+
+          display: none;
+          align-items: center;
+          justify-content: center;
+
+          padding: 20px;
+
+          background: rgba(0,0,0,.78);
+
+          backdrop-filter: blur(8px);
+      }
+
+      .modal.open {
+          display: flex;
+      }
+
+      .modal-box {
+          width: 100%;
+          max-width: 500px;
+
+          padding: 25px;
+
+          border: 1px solid var(--line);
+
+          background: var(--navy-deep);
+
+          box-shadow: 0 25px 80px rgba(0,0,0,.55);
+      }
+
+      .modal-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+
+          margin-bottom: 20px;
+      }
+
+      .modal-title {
+          font-family: var(--display);
+          font-size: 24px;
+      }
+
+      .modal-close {
+          border: 0;
+
+          background: transparent;
+          color: var(--text-muted);
+
+          font-size: 20px;
+      }
+
+      .profile-grid {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+
+          gap: 10px;
+
+          margin-top: 20px;
+      }
+
+      .profile-stat {
+          padding: 12px;
+
+          border: 1px solid var(--line);
+
+          text-align: center;
+      }
+
+      .profile-stat-value {
+          font-family: var(--display);
+          font-size: 20px;
+      }
+
+      .profile-stat-label {
+          color: var(--text-muted);
+
+          font-family: var(--mono);
+          font-size: 8px;
+
+          text-transform: uppercase;
+      }
+
+      /* =====================================================
+         DIALOG
+      ===================================================== */
+
+      .dialog-overlay {
+          position: fixed;
+          inset: 0;
+
+          z-index: 5000;
+
+          display: none;
+          align-items: center;
+          justify-content: center;
+
+          padding: 20px;
+
+          background: rgba(0,0,0,.78);
+
+          backdrop-filter: blur(8px);
+      }
+
+      .dialog-overlay.open {
+          display: flex;
+      }
+
+      .dialog-box {
+          position: relative;
+
+          width: 100%;
+          max-width: 480px;
+
+          border: 1px solid var(--line);
+
+          background:
+                  linear-gradient(
+                          145deg,
+                          rgba(19,40,64,.98),
+                          rgba(10,13,18,.98)
+                  );
+
+          box-shadow: 0 25px 80px rgba(0,0,0,.55);
+
+          animation: dialogIn .16s ease-out;
+      }
+
+      @keyframes dialogIn {
+          from {
+              opacity: 0;
+              transform: translateY(12px) scale(.98);
+          }
+
+          to {
+              opacity: 1;
+              transform: translateY(0) scale(1);
+          }
+      }
+
+      .dialog-accent {
+          height: 2px;
+          background: var(--amber);
+      }
+
+      .dialog-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-start;
+
+          padding: 22px 22px 10px;
+      }
+
+      .dialog-eyebrow {
+          color: var(--amber);
+
+          font-family: var(--mono);
+          font-size: 8px;
+
+          letter-spacing: .14em;
+          text-transform: uppercase;
+      }
+
+      .dialog-header h2 {
+          margin: 5px 0 0;
+
+          font-family: var(--display);
+          font-size: 22px;
+      }
+
+      .dialog-close {
+          border: 0;
+
+          background: transparent;
+          color: var(--text-muted);
+
+          font-size: 24px;
+      }
+
+      .dialog-close:hover {
+          color: var(--text);
+      }
+
+      .dialog-message {
+          padding: 8px 22px 20px;
+
+          color: var(--text-muted);
+
+          font-size: 13px;
+          line-height: 1.65;
+
+          white-space: pre-wrap;
+      }
+
+      .dialog-input-container {
+          padding: 0 22px 18px;
+      }
+
+      .dialog-input {
+          width: 100%;
+
+          min-height: 100px;
+
+          padding: 12px;
+
+          resize: vertical;
+
+          border: 1px solid var(--line);
+
+          outline: none;
+
+          background: rgba(0,0,0,.25);
+          color: var(--text);
+
+          font-family: var(--body);
+      }
+
+      .dialog-input:focus {
+          border-color: var(--amber);
+      }
+
+      .dialog-actions {
+          display: flex;
+          justify-content: flex-end;
+          gap: 8px;
+
+          padding: 15px 22px;
+
+          border-top: 1px solid var(--line);
+      }
+
+      .dialog-button {
+          padding: 9px 15px;
+
+          border: 1px solid var(--line);
+
+          background: transparent;
+
+          font-family: var(--mono);
+          font-size: 9px;
+
+          letter-spacing: .08em;
+          text-transform: uppercase;
+      }
+
+      .dialog-button.secondary {
+          color: var(--text-muted);
+      }
+
+      .dialog-button.secondary:hover {
+          border-color: var(--text-muted);
+          color: var(--text);
+      }
+
+      .dialog-button.primary {
+          border-color: var(--amber);
+
+          background: var(--amber);
+          color: var(--ink);
+      }
+
+      .dialog-button.primary:hover {
+          background: var(--amber-hover);
+      }
+
+      .dialog-button.danger {
+          border-color: var(--red);
+
+          background: var(--red);
+          color: var(--ink);
+      }
+
+      /* =====================================================
+         FOOTER
+      ===================================================== */
+
+      footer {
+          border-top: 1px solid var(--line);
+
+          padding: 40px;
+
+          background: #080B10;
+      }
+
+      .footer-inner {
+          max-width: 1100px;
+          margin: auto;
+
+          display: flex;
+          justify-content: space-between;
+          gap: 20px;
+      }
+
+      .footer-copy {
+          color: var(--text-muted);
+
+          font-family: var(--mono);
+          font-size: 9px;
+      }
+
+      /* =====================================================
+         MOBILE
+      ===================================================== */
+
+      @media (max-width: 700px) {
+          header {
+              padding: 0 18px;
+          }
+
+          nav,
+          .header-user {
+              display: none;
+          }
+
+          main {
+              padding: 35px 18px 70px;
+          }
+
+          .post {
+              grid-template-columns: 1fr;
+          }
+
+          .post.reply-post {
+              margin-left: 15px;
+          }
+
+          .post.reply-post::before {
+              left: -9px;
+          }
+
+          .post-user {
+              display: flex;
+              align-items: center;
+              gap: 12px;
+
+              border-right: 0;
+              border-bottom: 1px solid var(--line);
+          }
+
+          .avatar {
+              margin: 0;
+          }
+
+          .footer-inner {
+              flex-direction: column;
+          }
+
+          .profile-grid {
+              grid-template-columns: 1fr;
+          }
+      }
+  </style>
 </head>
+
 <body>
-$END$
+
+<header>
+  <a href="forums.html" class="brand">
+    <span class="brand-badge">ERT</span>
+    <span class="brand-word">EN ROUTE</span>
+  </a>
+
+  <nav>
+    <a href="/">Home</a>
+    <a href="/fleet.html">Fleet</a>
+    <a href="/forums.html" class="active">Forums</a>
+    <a href="/route-map.html">Route Map</a>
+    <a href="/careers.html">Careers</a>
+  </nav>
+
+  <div class="header-user">
+    <button id="loginButton" type="button">
+      Pilot Login
+    </button>
+  </div>
+</header>
+
+<main>
+  <div class="container">
+
+    <div class="breadcrumb">
+      <a href="/forums.html">Forums</a>
+      <span>›</span>
+      <span id="breadcrumbCategory">Thread</span>
+    </div>
+
+    <div class="search-box">
+      <input
+        id="searchInput"
+        type="search"
+        placeholder="Search threads and posts..."
+      >
+
+      <button
+        id="searchButton"
+        type="button"
+      >
+        SEARCH
+      </button>
+    </div>
+
+    <div id="threadContainer">
+      <div class="status">
+        Loading thread...
+      </div>
+    </div>
+
+    <section class="reply-section">
+
+      <div class="reply-title">
+        Reply to this discussion
+      </div>
+
+      <div class="reply-box">
+
+        <div id="replyLogin" class="reply-login">
+          You must be signed in to reply to this thread.
+
+          <br>
+
+          <button
+            type="button"
+            id="replyLoginButton"
+          >
+            Sign In
+          </button>
+        </div>
+
+        <form
+          id="replyForm"
+          style="display:none;"
+        >
+
+          <div
+            id="replyingTo"
+            class="replying-to"
+          >
+            <span id="replyingToText"></span>
+
+            <button
+              type="button"
+              id="cancelReply"
+            >
+              ×
+            </button>
+          </div>
+
+          <textarea
+            id="replyContent"
+            placeholder="Write your reply..."
+            maxlength="10000"
+            required
+          ></textarea>
+
+          <button
+            type="submit"
+            class="reply-submit"
+            id="replySubmit"
+          >
+            Post Reply →
+          </button>
+
+        </form>
+
+      </div>
+
+    </section>
+
+  </div>
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-copy">
+      © 2026 EN ROUTE VIRTUAL AIRLINE · ERT · SIM ONLY
+    </div>
+
+    <div class="footer-copy">
+      COMMUNITY OPERATIONS
+    </div>
+  </div>
+</footer>
+
+<!-- PROFILE MODAL -->
+
+<div id="profileModal" class="modal">
+
+  <div class="modal-box">
+
+    <div class="modal-header">
+
+      <div id="profileName" class="modal-title">
+        Profile
+      </div>
+
+      <button
+        class="modal-close"
+        id="profileClose"
+        type="button"
+      >
+        ×
+      </button>
+
+    </div>
+
+    <div id="profileContent">
+      Loading...
+    </div>
+
+  </div>
+
+</div>
+
+<!-- CUSTOM DIALOG -->
+
+<div id="dialogOverlay" class="dialog-overlay">
+
+  <div class="dialog-box">
+
+    <div class="dialog-accent"></div>
+
+    <div class="dialog-header">
+
+      <div>
+        <div id="dialogEyebrow" class="dialog-eyebrow">
+          SYSTEM
+        </div>
+
+        <h2 id="dialogTitle">
+          Message
+        </h2>
+      </div>
+
+      <button
+        type="button"
+        class="dialog-close"
+        id="dialogClose"
+      >
+        ×
+      </button>
+
+    </div>
+
+    <div
+      id="dialogMessage"
+      class="dialog-message"
+    ></div>
+
+    <div
+      id="dialogInputContainer"
+      class="dialog-input-container"
+    ></div>
+
+    <div class="dialog-actions">
+
+      <button
+        type="button"
+        class="dialog-button secondary"
+        id="dialogCancel"
+      >
+        Cancel
+      </button>
+
+      <button
+        type="button"
+        class="dialog-button primary"
+        id="dialogConfirm"
+      >
+        Continue
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+  /* =========================================================
+     CONFIG
+  ========================================================= */
+
+  const params =
+    new URLSearchParams(window.location.search);
+
+  const threadId =
+    params.get("id");
+
+  let currentPage = 1;
+  let currentReplyTo = null;
+  let threadData = null;
+  let dialogResolve = null;
+
+
+  /* =========================================================
+     DOM
+  ========================================================= */
+
+  const threadContainer =
+    document.getElementById("threadContainer");
+
+  const breadcrumbCategory =
+    document.getElementById("breadcrumbCategory");
+
+  const replyLogin =
+    document.getElementById("replyLogin");
+
+  const replyForm =
+    document.getElementById("replyForm");
+
+  const replyLoginButton =
+    document.getElementById("replyLoginButton");
+
+  const replyContent =
+    document.getElementById("replyContent");
+
+  const replySubmit =
+    document.getElementById("replySubmit");
+
+  const loginButton =
+    document.getElementById("loginButton");
+
+  const replyingTo =
+    document.getElementById("replyingTo");
+
+  const replyingToText =
+    document.getElementById("replyingToText");
+
+  const cancelReply =
+    document.getElementById("cancelReply");
+
+  const searchInput =
+    document.getElementById("searchInput");
+
+  const searchButton =
+    document.getElementById("searchButton");
+
+  const profileModal =
+    document.getElementById("profileModal");
+
+  const profileName =
+    document.getElementById("profileName");
+
+  const profileContent =
+    document.getElementById("profileContent");
+
+  const profileClose =
+    document.getElementById("profileClose");
+
+  const dialogOverlay =
+    document.getElementById("dialogOverlay");
+
+  const dialogTitle =
+    document.getElementById("dialogTitle");
+
+  const dialogEyebrow =
+    document.getElementById("dialogEyebrow");
+
+  const dialogMessage =
+    document.getElementById("dialogMessage");
+
+  const dialogInputContainer =
+    document.getElementById("dialogInputContainer");
+
+  const dialogConfirm =
+    document.getElementById("dialogConfirm");
+
+  const dialogCancel =
+    document.getElementById("dialogCancel");
+
+  const dialogClose =
+    document.getElementById("dialogClose");
+
+
+  /* =========================================================
+     AUTH
+  ========================================================= */
+
+  function normalizeRole(role) {
+
+    if (
+      role === null ||
+      role === undefined
+    ) {
+      return "pilot";
+    }
+
+    const normalized =
+      String(role)
+        .trim()
+        .toLowerCase();
+
+    switch (normalized) {
+
+      case "admin":
+      case "administrator":
+        return "administrator";
+
+      case "moderator":
+      case "mod":
+        return "moderator";
+
+      case "staff":
+        return "staff";
+
+      case "navy":
+        return "navy";
+
+      case "pilot":
+        return "pilot";
+
+      default:
+        return "pilot";
+    }
+  }
+
+
+  /*
+   * Read the logged-in user from localStorage.
+   *
+   * Expected login storage:
+   *
+   * token
+   * user_id
+   * username
+   * role
+   */
+  function getCurrentUser() {
+
+    const token =
+      localStorage.getItem("token");
+
+    const userId =
+      localStorage.getItem("user_id");
+
+    const username =
+      localStorage.getItem("username");
+
+    const storedRole =
+      localStorage.getItem("role");
+
+
+    if (
+      !token ||
+      !userId ||
+      !username
+    ) {
+      return null;
+    }
+
+
+    return {
+      id: Number(userId),
+      username: username,
+      role: normalizeRole(storedRole),
+      token: token
+    };
+  }
+
+
+  function getRoleLabel(role) {
+
+    switch (
+      normalizeRole(role)
+      ) {
+
+      case "administrator":
+        return "Administrator";
+
+      case "moderator":
+        return "Moderator";
+
+      case "staff":
+        return "Staff";
+
+      case "navy":
+        return "Navy";
+
+      default:
+        return "Pilot";
+    }
+  }
+
+
+  function getRoleClass(role) {
+
+    switch (
+      normalizeRole(role)
+      ) {
+
+      case "administrator":
+        return "administrator";
+
+      case "moderator":
+        return "moderator";
+
+      case "staff":
+        return "staff";
+
+      case "navy":
+        return "navy";
+
+      default:
+        return "pilot";
+    }
+  }
+
+
+  function getAuthHeaders() {
+
+    const token =
+      localStorage.getItem("token");
+
+    const headers = {
+      "Content-Type": "application/json"
+    };
+
+    if (token) {
+      headers["Authorization"] =
+        `Bearer ${token}`;
+    }
+
+    return headers;
+  }
+
+
+  /* =========================================================
+     MODERATION
+  ========================================================= */
+
+  function isModerator() {
+
+    const user =
+      getCurrentUser();
+
+    if (!user) {
+      return false;
+    }
+
+    const role =
+      normalizeRole(user.role);
+
+    return [
+      "administrator",
+      "moderator",
+      "staff"
+    ].includes(role);
+  }
+
+
+  /* =========================================================
+     LOGIN
+  ========================================================= */
+
+  function updateLoginButton() {
+
+    const user =
+      getCurrentUser();
+
+    if (!user) {
+
+      loginButton.textContent =
+        "Pilot Login";
+
+      loginButton.onclick =
+        openLogin;
+
+      return;
+    }
+
+    loginButton.textContent =
+      user.username;
+
+    loginButton.onclick =
+      logout;
+  }
+
+
+  function openLogin() {
+
+    window.location.href =
+      "/forums.html?login=1";
+  }
+
+
+  async function logout() {
+
+    const confirmed =
+      await confirmDialog(
+        "Log out?",
+        "Are you sure you want to log out of your En Route account?"
+      );
+
+    if (!confirmed) {
+      return;
+    }
+
+    localStorage.removeItem("user_id");
+    localStorage.removeItem("username");
+    localStorage.removeItem("role");
+    localStorage.removeItem("token");
+
+    window.location.reload();
+  }
+
+
+  /* =========================================================
+     DIALOG
+  ========================================================= */
+
+  function closeDialog(result = false) {
+
+    dialogOverlay.classList.remove("open");
+
+    document.body.classList.remove("modal-open");
+
+    if (dialogResolve) {
+
+      const resolve =
+        dialogResolve;
+
+      dialogResolve = null;
+
+      resolve(result);
+    }
+  }
+
+
+  function showDialog(
+    title,
+    message,
+    type = "info"
+  ) {
+
+    dialogResolve = null;
+
+    dialogTitle.textContent =
+      title;
+
+    dialogMessage.textContent =
+      message;
+
+    dialogEyebrow.textContent =
+      type === "error"
+        ? "ERROR"
+        : type === "warning"
+          ? "WARNING"
+          : "SYSTEM";
+
+    dialogInputContainer.innerHTML =
+      "";
+
+    dialogCancel.style.display =
+      "none";
+
+    dialogConfirm.textContent =
+      "OK";
+
+    dialogConfirm.className =
+      "dialog-button primary";
+
+    dialogOverlay.classList.add("open");
+
+    document.body.classList.add("modal-open");
+  }
+
+
+  function confirmDialog(
+    title,
+    message,
+    danger = false
+  ) {
+
+    return new Promise(resolve => {
+
+      dialogResolve =
+        resolve;
+
+      dialogTitle.textContent =
+        title;
+
+      dialogMessage.textContent =
+        message;
+
+      dialogEyebrow.textContent =
+        danger
+          ? "CONFIRM ACTION"
+          : "CONFIRM";
+
+      dialogInputContainer.innerHTML =
+        "";
+
+      dialogCancel.style.display =
+        "block";
+
+      dialogConfirm.textContent =
+        danger
+          ? "Delete"
+          : "Continue";
+
+      dialogConfirm.className =
+        danger
+          ? "dialog-button danger"
+          : "dialog-button primary";
+
+      dialogOverlay.classList.add("open");
+
+      document.body.classList.add("modal-open");
+    });
+  }
+
+
+  function promptDialog(
+    title,
+    message,
+    placeholder = ""
+  ) {
+
+    return new Promise(resolve => {
+
+      dialogResolve =
+        resolve;
+
+      dialogTitle.textContent =
+        title;
+
+      dialogMessage.textContent =
+        message;
+
+      dialogEyebrow.textContent =
+        "INPUT";
+
+      dialogInputContainer.innerHTML = `
+      <textarea
+        id="dialogInput"
+        class="dialog-input"
+        placeholder="${escapeHtml(placeholder)}"
+      ></textarea>
+    `;
+
+      dialogCancel.style.display =
+        "block";
+
+      dialogConfirm.textContent =
+        "Submit";
+
+      dialogConfirm.className =
+        "dialog-button primary";
+
+      dialogOverlay.classList.add("open");
+
+      document.body.classList.add("modal-open");
+
+      setTimeout(() => {
+
+        document
+          .getElementById("dialogInput")
+          ?.focus();
+
+      }, 50);
+    });
+  }
+
+
+  dialogClose.addEventListener(
+    "click",
+    () => closeDialog(false)
+  );
+
+
+  dialogCancel.addEventListener(
+    "click",
+    () => closeDialog(false)
+  );
+
+
+  dialogConfirm.addEventListener(
+    "click",
+    () => {
+
+      const input =
+        document.getElementById(
+          "dialogInput"
+        );
+
+      if (input) {
+
+        const value =
+          input.value.trim();
+
+        if (!value) {
+          return;
+        }
+
+        closeDialog(value);
+
+        return;
+      }
+
+      closeDialog(true);
+    }
+  );
+
+
+  dialogOverlay.addEventListener(
+    "click",
+    event => {
+
+      if (
+        event.target ===
+        dialogOverlay
+      ) {
+        closeDialog(false);
+      }
+    }
+  );
+
+
+  document.addEventListener(
+    "keydown",
+    event => {
+
+      if (
+        event.key === "Escape" &&
+        dialogOverlay.classList.contains("open")
+      ) {
+        closeDialog(false);
+      }
+
+    }
+  );
+
+
+  /* =========================================================
+     REPLY UI
+  ========================================================= */
+
+  function updateReplyUI() {
+
+    const user =
+      getCurrentUser();
+
+    const locked =
+      threadData?.thread?.locked === true;
+
+    if (
+      user &&
+      !locked
+    ) {
+
+      replyLogin.style.display =
+        "none";
+
+      replyForm.style.display =
+        "block";
+
+    } else {
+
+      replyLogin.style.display =
+        "block";
+
+      replyForm.style.display =
+        "none";
+    }
+  }
+
+
+  /* =========================================================
+     HELPERS
+  ========================================================= */
+
+  function getInitials(username) {
+
+    if (!username) {
+      return "?";
+    }
+
+    return String(username)
+      .substring(0, 2)
+      .toUpperCase();
+  }
+
+
+  function formatDate(dateString) {
+
+    if (!dateString) {
+      return "";
+    }
+
+    let date;
+
+    if (
+      typeof dateString === "string" &&
+      !dateString.endsWith("Z") &&
+      dateString.includes(" ")
+    ) {
+
+      date =
+        new Date(
+          dateString.replace(
+            " ",
+            "T"
+          ) + "Z"
+        );
+
+    } else {
+
+      date =
+        new Date(dateString);
+    }
+
+    if (
+      Number.isNaN(
+        date.getTime()
+      )
+    ) {
+      return dateString;
+    }
+
+    return date.toLocaleString(
+      undefined,
+      {
+        dateStyle: "medium",
+        timeStyle: "short"
+      }
+    );
+  }
+
+
+  function escapeHtml(value) {
+
+    if (
+      value === null ||
+      value === undefined
+    ) {
+      return "";
+    }
+
+    return String(value)
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+  }
+
+
+  function escapeJs(value) {
+
+    return String(
+      value ?? ""
+    )
+      .replaceAll("\\", "\\\\")
+      .replaceAll("'", "\\'")
+      .replaceAll("\n", "\\n")
+      .replaceAll("\r", "\\r");
+  }
+
+
+  /* =========================================================
+     BBCode
+  ========================================================= */
+
+  function formatPostContent(content) {
+
+    if (!content) {
+      return "";
+    }
+
+    let text =
+      String(content);
+
+    /*
+     * Escape HTML before processing BBCode.
+     */
+    text =
+      escapeHtml(text);
+
+
+    /*
+     * QUOTES
+     *
+     * [quote=123]
+     * text
+     * [/quote]
+     */
+    text =
+      text.replace(
+        /\[quote=(\d+)\]([\s\S]*?)\[\/quote\]/gi,
+        (match, postId, quoteContent) => {
+
+          const cleanQuote =
+            quoteContent
+              .replace(
+                /<br\s*\/?>/gi,
+                "\n"
+              )
+              .trim();
+
+          return `
+          <blockquote
+            class="quote"
+            data-quote-id="${postId}"
+          >
+
+            <div class="quote-author">
+              Quoted post #${postId}
+            </div>
+
+            <div class="quote-content">
+              ${cleanQuote.replace(
+            /\r?\n/g,
+            "<br>"
+          )}
+            </div>
+
+          </blockquote>
+        `;
+        }
+      );
+
+
+    /*
+     * BOLD
+     */
+    text =
+      text.replace(
+        /\[b\]([\s\S]*?)\[\/b\]/gi,
+        "<strong>$1</strong>"
+      );
+
+
+    /*
+     * ITALIC
+     */
+    text =
+      text.replace(
+        /\[i\]([\s\S]*?)\[\/i\]/gi,
+        "<em>$1</em>"
+      );
+
+
+    /*
+     * UNDERLINE
+     */
+    text =
+      text.replace(
+        /\[u\]([\s\S]*?)\[\/u\]/gi,
+        "<u>$1</u>"
+      );
+
+
+    /*
+     * STRIKETHROUGH
+     */
+    text =
+      text.replace(
+        /\[s\]([\s\S]*?)\[\/s\]/gi,
+        "<del>$1</del>"
+      );
+
+
+    /*
+     * CODE
+     */
+    text =
+      text.replace(
+        /\[code\]([\s\S]*?)\[\/code\]/gi,
+        "<code>$1</code>"
+      );
+
+
+    /*
+     * Remaining newlines.
+     */
+    text =
+      text.replace(
+        /\r?\n/g,
+        "<br>"
+      );
+
+
+    return text;
+  }
+
+
+  /* =========================================================
+     AUTHOR ROLE EXTRACTION
+  ========================================================= */
+
+  /*
+   * Different backend versions may return the author's
+   * role under different property names.
+   *
+   * This keeps the frontend compatible with all of them.
+   */
+  function getPostRole(post) {
+
+    if (!post) {
+      return "pilot";
+    }
+
+    const possibleRoles = [
+
+      post.role,
+
+      post.user_role,
+
+      post.author_role,
+
+      post.author?.role,
+
+      post.user?.role,
+
+      post.author?.user?.role
+
+    ];
+
+    for (
+      const value of possibleRoles
+      ) {
+
+      if (
+        value !== null &&
+        value !== undefined &&
+        String(value).trim() !== ""
+      ) {
+        return normalizeRole(value);
+      }
+    }
+
+    return "pilot";
+  }
+
+
+  /* =========================================================
+     LOAD THREAD
+  ========================================================= */
+
+  async function loadThread(page = 1) {
+
+    if (!threadId) {
+
+      threadContainer.innerHTML = `
+      <div class="status error">
+        No thread ID was provided.
+      </div>
+    `;
+
+      return;
+    }
+
+    currentPage =
+      page;
+
+    threadContainer.innerHTML = `
+    <div class="status">
+      Loading thread...
+    </div>
+  `;
+
+
+    try {
+
+      const response =
+        await fetch(
+          `/api/threads/${encodeURIComponent(
+            threadId
+          )}?page=${page}&limit=20`,
+          {
+            method: "GET",
+            headers: getAuthHeaders()
+          }
+        );
+
+
+      const data =
+        await response
+          .json()
+          .catch(
+            () => ({})
+          );
+
+
+      if (!response.ok) {
+
+        throw new Error(
+          data.error ||
+          data.detail ||
+          "Thread could not be loaded."
+        );
+      }
+
+
+      threadData =
+        data;
+
+
+      renderThread(data);
+
+      updateReplyUI();
+
+    } catch (error) {
+
+      console.error(
+        "Thread loading error:",
+        error
+      );
+
+      threadContainer.innerHTML = `
+      <div class="status error">
+
+        Could not load this thread.
+
+        <br><br>
+
+        ${escapeHtml(
+        error.message ||
+        "Unknown error"
+      )}
+
+      </div>
+    `;
+    }
+  }
+
+
+  /* =========================================================
+     RENDER THREAD
+  ========================================================= */
+
+  function renderThread(data) {
+
+    const thread =
+      data.thread || {};
+
+    const posts =
+      data.posts || [];
+
+
+    breadcrumbCategory.textContent =
+      thread.category ||
+      "Thread";
+
+
+    let html = `
+    <div class="thread-header">
+
+      <div class="thread-category">
+        ${escapeHtml(
+      thread.category ||
+      "General"
+    )}
+      </div>
+
+      <h1 class="thread-title">
+        ${escapeHtml(
+      thread.title ||
+      "Untitled Thread"
+    )}
+      </h1>
+
+      <div class="thread-meta">
+
+        <span>
+          Started by
+          ${escapeHtml(
+      thread.username ||
+      "Unknown"
+    )}
+        </span>
+
+        <span>·</span>
+
+        <span>
+          ${formatDate(
+      thread.created_at
+    )}
+        </span>
+
+        <span>·</span>
+
+        <span>
+          ${Number(
+      thread.views || 0
+    )} views
+        </span>
+
+      </div>
+
+      <div class="thread-controls">
+
+        ${
+      thread.locked
+        ? `
+              <button
+                class="control-button"
+                disabled
+              >
+                Locked
+              </button>
+            `
+        : ""
+    }
+
+        ${
+      isModerator()
+        ? `
+              <button
+                type="button"
+                class="control-button"
+                onclick="toggleThreadLock()"
+              >
+                ${
+          thread.locked
+            ? "Unlock Thread"
+            : "Lock Thread"
+        }
+              </button>
+
+              <button
+                type="button"
+                class="control-button"
+                onclick="toggleThreadPin()"
+              >
+                ${
+          thread.pinned
+            ? "Unpin Thread"
+            : "Pin Thread"
+        }
+              </button>
+
+              <button
+                type="button"
+                class="control-button danger"
+                onclick="deleteThread()"
+              >
+                Delete Thread
+              </button>
+            `
+        : ""
+    }
+
+      </div>
+
+    </div>
+  `;
+
+
+    if (thread.locked) {
+
+      html += `
+      <div class="locked-banner">
+        This discussion has been locked by a moderator.
+        New replies are disabled.
+      </div>
+    `;
+    }
+
+
+    /*
+     * IMPORTANT:
+     *
+     * The thread ID and post ID are different.
+     *
+     * Reactions must always use the actual post ID.
+     */
+    const originalPostId =
+      Number(
+        thread.post_id ||
+        thread.first_post_id ||
+        thread.id ||
+        0
+      );
+
+
+    /*
+     * The original thread post needs its AUTHOR'S role.
+     */
+    html += createPost(
+      {
+        id:
+        originalPostId,
+
+        username:
+        thread.username,
+
+        content:
+        thread.content,
+
+        created_at:
+        thread.created_at,
+
+        user_id:
+        thread.user_id,
+
+        role:
+          thread.role ??
+          thread.user_role ??
+          thread.author_role ??
+          thread.author?.role ??
+          thread.user?.role ??
+          "pilot",
+
+        likes:
+          thread.likes ||
+          0,
+
+        reactions:
+          thread.reactions ||
+          {},
+
+        user_reaction:
+          thread.user_reaction ||
+          null,
+
+        reply_to:
+          null,
+
+        post_count:
+          thread.post_count ||
+          0
+      },
+      1,
+      false
+    );
+
+
+    posts.forEach(
+      (post, index) => {
+
+        html +=
+          createPost(
+            post,
+            index + 2,
+            true
+          );
+      }
+    );
+
+
+    if (
+      data.pagination &&
+      data.pagination.total_pages > 1
+    ) {
+
+      html +=
+        renderPagination(
+          data.pagination
+        );
+    }
+
+
+    threadContainer.innerHTML =
+      html;
+  }
+
+
+  /* =========================================================
+     CREATE POST
+  ========================================================= */
+
+  function createPost(
+    post,
+    number,
+    isReply
+  ) {
+
+    const user =
+      getCurrentUser();
+
+    const postId =
+      Number(post.id || 0);
+
+
+    const canReact =
+      postId > 0;
+
+
+    const canDelete =
+      user &&
+      (
+        Number(user.id) ===
+        Number(post.user_id) ||
+        isModerator()
+      );
+
+
+    /*
+     * AUTHOR ROLE
+     *
+     * This is deliberately NOT user.role.
+     *
+     * user.role = logged-in user's role.
+     *
+     * post.role = author's role.
+     */
+    const role =
+      getPostRole(post);
+
+    const roleLabel =
+      getRoleLabel(role);
+
+    const roleClass =
+      getRoleClass(role);
+
+
+    const reactionData =
+      post.reactions || {};
+
+    const userReaction =
+      post.user_reaction ||
+      null;
+
+
+    let reactionsHTML =
+      "";
+
+
+    /*
+     * EXISTING REACTIONS
+     */
+    Object.entries(
+      reactionData
+    ).forEach(
+      ([reaction, count]) => {
+
+        reactionsHTML += `
+        <button
+          type="button"
+          class="reaction ${
+          userReaction === reaction
+            ? "active"
+            : ""
+        }"
+          ${
+          canReact
+            ? `onclick="reactToPost(
+                  ${postId},
+                  '${escapeJs(reaction)}'
+                )"`
+            : "disabled"
+        }
+        >
+          ${escapeHtml(reaction)}
+          ${Number(count || 0)}
+        </button>
+      `;
+      }
+    );
+
+
+    /*
+     * CONTENT
+     */
+    const renderedContent =
+      formatPostContent(
+        post.content || ""
+      );
+
+
+    return `
+    <article
+      class="post ${
+      isReply
+        ? "reply-post"
+        : ""
+    }"
+      id="post-${postId}"
+    >
+
+      <!-- USER -->
+
+      <div class="post-user">
+
+        <div
+          class="avatar"
+          onclick="openProfile(
+            ${Number(
+      post.user_id || 0
+    )},
+            '${escapeJs(
+      post.username || ""
+    )}'
+          )"
+          title="View profile"
+          style="cursor:pointer"
+        >
+          ${getInitials(
+      post.username
+    )}
+        </div>
+
+
+        <div>
+
+          <div
+            class="post-username"
+            onclick="openProfile(
+              ${Number(
+      post.user_id || 0
+    )},
+              '${escapeJs(
+      post.username || ""
+    )}'
+            )"
+            style="cursor:pointer"
+          >
+
+            ${escapeHtml(
+      post.username ||
+      "Unknown"
+    )}
+
+            ${
+      role !== "pilot"
+        ? `
+                  <span
+                    class="role-badge ${roleClass}"
+                  >
+                    ${escapeHtml(
+          roleLabel
+        )}
+                  </span>
+                `
+        : ""
+    }
+
+          </div>
+
+
+          <div
+            class="post-role ${roleClass}"
+          >
+            ${escapeHtml(
+      roleLabel
+    )}
+          </div>
+
+
+          <div class="post-stats">
+            ${Number(
+      post.post_count || 0
+    )} posts
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- POST -->
+
+      <div class="post-content">
+
+        <div class="post-top">
+
+          <span class="post-number">
+            #${number}
+          </span>
+
+          <span>
+            ${formatDate(
+      post.created_at
+    )}
+          </span>
+
+        </div>
+
+
+        <div class="post-message">
+          ${renderedContent}
+        </div>
+
+
+        <!-- ACTIONS -->
+
+        <div class="post-actions">
+
+          <div class="reactions">
+            ${reactionsHTML}
+          </div>
+
+
+          ${
+      user && postId > 0
+        ? `
+                <button
+                  type="button"
+                  class="post-action"
+                  onclick="quotePost(
+                    ${postId},
+                    '${escapeJs(
+          post.username || ""
+        )}',
+                    '${escapeJs(
+          post.content || ""
+        )}'
+                  )"
+                >
+                  Quote
+                </button>
+
+                <button
+                  type="button"
+                  class="post-action"
+                  onclick="replyToPost(
+                    ${postId},
+                    '${escapeJs(
+          post.username || ""
+        )}'
+                  )"
+                >
+                  Reply
+                </button>
+
+                <button
+                  type="button"
+                  class="post-action danger"
+                  onclick="reportPost(
+                    ${postId}
+                  )"
+                >
+                  Report
+                </button>
+              `
+        : ""
+    }
+
+
+          ${
+      canDelete &&
+      postId > 0
+        ? `
+                <button
+                  type="button"
+                  class="post-action danger"
+                  onclick="deletePost(
+                    ${postId}
+                  )"
+                >
+                  Delete
+                </button>
+              `
+        : ""
+    }
+
+        </div>
+
+      </div>
+
+    </article>
+  `;
+  }
+
+
+  /* =========================================================
+     REACTIONS
+  ========================================================= */
+
+  async function reactToPost(
+    postId,
+    reaction
+  ) {
+
+    const user =
+      getCurrentUser();
+
+
+    if (!user) {
+
+      showDialog(
+        "Sign in required",
+        "You need to be signed in to react to posts.",
+        "warning"
+      );
+
+      return;
+    }
+
+
+    postId =
+      Number(postId);
+
+
+    if (
+      !Number.isInteger(postId) ||
+      postId <= 0
+    ) {
+
+      showDialog(
+        "Reaction unavailable",
+        "This post does not have a valid post ID.",
+        "error"
+      );
+
+      return;
+    }
+
+
+    const token =
+      localStorage.getItem("token");
+
+
+    if (!token) {
+
+      showDialog(
+        "Session expired",
+        "Your login session is missing. Please sign in again.",
+        "warning"
+      );
+
+      return;
+    }
+
+
+    try {
+
+      const response =
+        await fetch(
+          `/api/posts/${postId}/reaction`,
+          {
+            method: "POST",
+
+            headers: {
+              "Content-Type":
+                "application/json",
+
+              "Authorization":
+                `Bearer ${token}`
+            },
+
+            body:
+              JSON.stringify({
+                reaction
+              })
+          }
+        );
+
+
+      const data =
+        await response
+          .json()
+          .catch(
+            () => ({})
+          );
+
+
+      if (!response.ok) {
+
+        throw new Error(
+          data.error ||
+          data.detail ||
+          "Could not react to this post."
+        );
+      }
+
+
+      await loadThread(
+        currentPage
+      );
+
+    } catch (error) {
+
+      console.error(
+        "Reaction error:",
+        error
+      );
+
+      showDialog(
+        "Reaction failed",
+        error.message,
+        "error"
+      );
+    }
+  }
+
+
+  /* =========================================================
+     REPLY
+  ========================================================= */
+
+  function replyToPost(
+    postId,
+    username
+  ) {
+
+    postId =
+      Number(postId);
+
+
+    if (
+      !Number.isInteger(postId) ||
+      postId <= 0
+    ) {
+
+      showDialog(
+        "Reply unavailable",
+        "This post does not have a valid post ID.",
+        "error"
+      );
+
+      return;
+    }
+
+
+    currentReplyTo =
+      postId;
+
+
+    replyingToText.textContent =
+      `Replying to ${username}`;
+
+
+    replyingTo.style.display =
+      "block";
+
+
+    replyContent.focus();
+
+
+    const section =
+      document.querySelector(
+        ".reply-section"
+      );
+
+    if (section) {
+
+      window.scrollTo({
+        top:
+          section.offsetTop - 100,
+
+        behavior:
+          "smooth"
+      });
+    }
+  }
+
+
+  /* =========================================================
+     QUOTE
+  ========================================================= */
+
+  function quotePost(
+    postId,
+    username,
+    content
+  ) {
+
+    postId =
+      Number(postId);
+
+
+    if (
+      !Number.isInteger(postId) ||
+      postId <= 0
+    ) {
+
+      showDialog(
+        "Quote unavailable",
+        "This post does not have a valid post ID.",
+        "error"
+      );
+
+      return;
+    }
+
+
+    currentReplyTo =
+      postId;
+
+
+    replyingToText.textContent =
+      `Quoting ${username}`;
+
+
+    replyingTo.style.display =
+      "block";
+
+
+    replyContent.value =
+      `[quote=${postId}]\n${content}\n[/quote]\n\n`;
+
+
+    replyContent.focus();
+
+
+    const section =
+      document.querySelector(
+        ".reply-section"
+      );
+
+    if (section) {
+
+      window.scrollTo({
+        top:
+          section.offsetTop - 100,
+
+        behavior:
+          "smooth"
+      });
+    }
+  }
+
+
+  /* =========================================================
+     CANCEL REPLY
+  ========================================================= */
+
+  cancelReply.addEventListener(
+    "click",
+    () => {
+
+      currentReplyTo =
+        null;
+
+      replyingTo.style.display =
+        "none";
+
+      replyContent.value =
+        "";
+    }
+  );
+
+
+  /* =========================================================
+     SUBMIT REPLY
+  ========================================================= */
+
+  replyForm.addEventListener(
+    "submit",
+    async event => {
+
+      event.preventDefault();
+
+
+      const user =
+        getCurrentUser();
+
+
+      if (!user) {
+
+        openLogin();
+
+        return;
+      }
+
+
+      const content =
+        replyContent.value.trim();
+
+
+      if (!content) {
+
+        showDialog(
+          "Empty reply",
+          "Please write something before posting your reply.",
+          "warning"
+        );
+
+        return;
+      }
+
+
+      replySubmit.disabled =
+        true;
+
+      replySubmit.textContent =
+        "Posting...";
+
+
+      try {
+
+        const response =
+          await fetch(
+            `/api/threads/${encodeURIComponent(
+              threadId
+            )}/reply`,
+            {
+              method: "POST",
+
+              headers:
+                getAuthHeaders(),
+
+              body:
+                JSON.stringify({
+                  content,
+
+                  parent_post_id:
+                  currentReplyTo
+                })
+            }
+          );
+
+
+        const data =
+          await response
+            .json()
+            .catch(
+              () => ({})
+            );
+
+
+        if (!response.ok) {
+
+          throw new Error(
+            data.error ||
+            data.detail ||
+            "Could not post reply."
+          );
+        }
+
+
+        replyContent.value =
+          "";
+
+        currentReplyTo =
+          null;
+
+        replyingTo.style.display =
+          "none";
+
+
+        await loadThread(
+          currentPage
+        );
+
+      } catch (error) {
+
+        console.error(
+          "Reply error:",
+          error
+        );
+
+        showDialog(
+          "Reply failed",
+          error.message,
+          "error"
+        );
+
+      } finally {
+
+        replySubmit.disabled =
+          false;
+
+        replySubmit.textContent =
+          "Post Reply →";
+      }
+    }
+  );
+
+
+  /* =========================================================
+     PAGINATION
+  ========================================================= */
+
+  function renderPagination(
+    pagination
+  ) {
+
+    let html = `
+    <div class="pagination">
+  `;
+
+
+    if (
+      pagination.page > 1
+    ) {
+
+      html += `
+      <button
+        type="button"
+        class="page-button"
+        onclick="loadThread(
+          ${pagination.page - 1}
+        )"
+      >
+        ←
+      </button>
+    `;
+    }
+
+
+    for (
+      let i = 1;
+      i <= pagination.total_pages;
+      i++
+    ) {
+
+      if (
+        i === 1 ||
+        i === pagination.total_pages ||
+        Math.abs(
+          i - pagination.page
+        ) <= 2
+      ) {
+
+        html += `
+        <button
+          type="button"
+          class="page-button ${
+          i === pagination.page
+            ? "active"
+            : ""
+        }"
+          onclick="loadThread(${i})"
+        >
+          ${i}
+        </button>
+      `;
+      }
+    }
+
+
+    if (
+      pagination.page <
+      pagination.total_pages
+    ) {
+
+      html += `
+      <button
+        type="button"
+        class="page-button"
+        onclick="loadThread(
+          ${pagination.page + 1}
+        )"
+      >
+        →
+      </button>
+    `;
+    }
+
+
+    html += `
+    </div>
+  `;
+
+
+    return html;
+  }
+
+
+  /* =========================================================
+     SEARCH
+  ========================================================= */
+
+  function searchForums() {
+
+    const query =
+      searchInput.value.trim();
+
+
+    if (!query) {
+      return;
+    }
+
+
+    window.location.href =
+      `/forum-search.html?q=${encodeURIComponent(
+        query
+      )}`;
+  }
+
+
+  searchButton.addEventListener(
+    "click",
+    searchForums
+  );
+
+
+  searchInput.addEventListener(
+    "keydown",
+    event => {
+
+      if (
+        event.key === "Enter"
+      ) {
+        searchForums();
+      }
+
+    }
+  );
+
+
+  /* =========================================================
+     PROFILE
+  ========================================================= */
+
+  async function openProfile(
+    userId,
+    username
+  ) {
+
+    if (!userId) {
+      return;
+    }
+
+
+    profileModal.classList.add(
+      "open"
+    );
+
+    document.body.classList.add(
+      "modal-open"
+    );
+
+
+    profileName.textContent =
+      username || "Profile";
+
+
+    profileContent.innerHTML =
+      "Loading...";
+
+
+    try {
+
+      const response =
+        await fetch(
+          `/api/users/${userId}`,
+          {
+            headers:
+              getAuthHeaders()
+          }
+        );
+
+
+      const data =
+        await response.json();
+
+
+      if (!response.ok) {
+
+        throw new Error(
+          data.error ||
+          data.detail ||
+          "Profile could not be loaded."
+        );
+      }
+
+
+      const profileRole =
+        normalizeRole(
+          data.role ||
+          data.user_role ||
+          data.author_role ||
+          "pilot"
+        );
+
+
+      const profileRoleLabel =
+        getRoleLabel(
+          profileRole
+        );
+
+
+      const profileRoleClass =
+        getRoleClass(
+          profileRole
+        );
+
+
+      profileContent.innerHTML = `
+
+      <div>
+
+        <strong>
+          ${escapeHtml(
+        data.username ||
+        username ||
+        "Unknown"
+      )}
+        </strong>
+
+        <div
+          class="post-role ${profileRoleClass}"
+          style="margin-top:5px;"
+        >
+          ${escapeHtml(
+        profileRoleLabel
+      )}
+        </div>
+
+      </div>
+
+
+      <div class="profile-grid">
+
+        <div class="profile-stat">
+
+          <div class="profile-stat-value">
+            ${Number(
+        data.post_count ||
+        0
+      )}
+          </div>
+
+          <div class="profile-stat-label">
+            Posts
+          </div>
+
+        </div>
+
+
+        <div class="profile-stat">
+
+          <div class="profile-stat-value">
+            ${Number(
+        data.thread_count ||
+        0
+      )}
+          </div>
+
+          <div class="profile-stat-label">
+            Threads
+          </div>
+
+        </div>
+
+
+        <div class="profile-stat">
+
+          <div
+            class="profile-stat-value"
+            style="font-size:12px;"
+          >
+            ${formatDate(
+        data.created_at
+      )}
+          </div>
+
+          <div class="profile-stat-label">
+            Joined
+          </div>
+
+        </div>
+
+      </div>
+    `;
+
+    } catch (error) {
+
+      profileContent.innerHTML = `
+      <div class="status error">
+        ${escapeHtml(
+        error.message
+      )}
+      </div>
+    `;
+    }
+  }
+
+
+  profileClose.addEventListener(
+    "click",
+    () => {
+
+      profileModal.classList.remove(
+        "open"
+      );
+
+      document.body.classList.remove(
+        "modal-open"
+      );
+    }
+  );
+
+
+  profileModal.addEventListener(
+    "click",
+    event => {
+
+      if (
+        event.target ===
+        profileModal
+      ) {
+
+        profileModal.classList.remove(
+          "open"
+        );
+
+        document.body.classList.remove(
+          "modal-open"
+        );
+      }
+    }
+  );
+
+
+  /* =========================================================
+     REPORT
+  ========================================================= */
+
+  async function reportPost(
+    postId
+  ) {
+
+    const user =
+      getCurrentUser();
+
+
+    if (!user) {
+
+      openLogin();
+
+      return;
+    }
+
+
+    postId =
+      Number(postId);
+
+
+    if (
+      !Number.isInteger(postId) ||
+      postId <= 0
+    ) {
+
+      showDialog(
+        "Report unavailable",
+        "Invalid post ID.",
+        "error"
+      );
+
+      return;
+    }
+
+
+    const reason =
+      await promptDialog(
+        "Report post",
+        "Tell the moderation team why you are reporting this post.",
+        "Reason for report..."
+      );
+
+
+    if (
+      !reason ||
+      !reason.trim()
+    ) {
+      return;
+    }
+
+
+    try {
+
+      const response =
+        await fetch(
+          `/api/posts/${postId}/report`,
+          {
+            method: "POST",
+
+            headers:
+              getAuthHeaders(),
+
+            body:
+              JSON.stringify({
+                reason:
+                  reason.trim()
+              })
+          }
+        );
+
+
+      const text =
+        await response.text();
+
+
+      let data = {};
+
+
+      try {
+
+        data =
+          JSON.parse(text);
+
+      } catch {
+
+        data = {
+          error: text
+        };
+      }
+
+
+      if (!response.ok) {
+
+        throw new Error(
+          data.error ||
+          data.detail ||
+          `Report failed (${response.status})`
+        );
+      }
+
+
+      showDialog(
+        "Report submitted",
+        "Thank you. The moderation team has received your report."
+      );
+
+    } catch (error) {
+
+      console.error(
+        "Report error:",
+        error
+      );
+
+      showDialog(
+        "Report failed",
+        error.message ||
+        "Could not submit the report.",
+        "error"
+      );
+    }
+  }
+
+
+  /* =========================================================
+     DELETE POST
+  ========================================================= */
+
+  async function deletePost(
+    postId
+  ) {
+
+    postId =
+      Number(postId);
+
+
+    if (
+      !Number.isInteger(postId) ||
+      postId <= 0
+    ) {
+      return;
+    }
+
+
+    const confirmed =
+      await confirmDialog(
+        "Delete post?",
+        "This action cannot be undone.",
+        true
+      );
+
+
+    if (!confirmed) {
+      return;
+    }
+
+
+    try {
+
+      const response =
+        await fetch(
+          `/api/posts/${postId}`,
+          {
+            method: "DELETE",
+
+            headers:
+              getAuthHeaders()
+          }
+        );
+
+
+      const data =
+        await response
+          .json()
+          .catch(
+            () => ({})
+          );
+
+
+      if (!response.ok) {
+
+        throw new Error(
+          data.error ||
+          data.detail ||
+          "Could not delete post."
+        );
+      }
+
+
+      await loadThread(
+        currentPage
+      );
+
+    } catch (error) {
+
+      showDialog(
+        "Delete failed",
+        error.message,
+        "error"
+      );
+    }
+  }
+
+
+  /* =========================================================
+     THREAD LOCK
+  ========================================================= */
+
+  async function toggleThreadLock() {
+
+    if (!isModerator()) {
+      return;
+    }
+
+
+    try {
+
+      const response =
+        await fetch(
+          `/api/threads/${encodeURIComponent(
+            threadId
+          )}/lock`,
+          {
+            method: "POST",
+
+            headers:
+              getAuthHeaders()
+          }
+        );
+
+
+      const data =
+        await response
+          .json()
+          .catch(
+            () => ({})
+          );
+
+
+      if (!response.ok) {
+
+        throw new Error(
+          data.error ||
+          data.detail ||
+          "Could not change thread lock."
+        );
+      }
+
+
+      await loadThread(
+        currentPage
+      );
+
+    } catch (error) {
+
+      showDialog(
+        "Lock failed",
+        error.message,
+        "error"
+      );
+    }
+  }
+
+
+  /* =========================================================
+     THREAD PIN
+  ========================================================= */
+
+  async function toggleThreadPin() {
+
+    if (!isModerator()) {
+      return;
+    }
+
+
+    try {
+
+      const response =
+        await fetch(
+          `/api/threads/${encodeURIComponent(
+            threadId
+          )}/pin`,
+          {
+            method: "POST",
+
+            headers:
+              getAuthHeaders()
+          }
+        );
+
+
+      const data =
+        await response
+          .json()
+          .catch(
+            () => ({})
+          );
+
+
+      if (!response.ok) {
+
+        throw new Error(
+          data.error ||
+          data.detail ||
+          "Could not change thread pin."
+        );
+      }
+
+
+      await loadThread(
+        currentPage
+      );
+
+    } catch (error) {
+
+      showDialog(
+        "Pin failed",
+        error.message,
+        "error"
+      );
+    }
+  }
+
+
+  /* =========================================================
+     DELETE THREAD
+  ========================================================= */
+
+  async function deleteThread() {
+
+    if (!isModerator()) {
+      return;
+    }
+
+
+    const confirmed =
+      await confirmDialog(
+        "Delete thread?",
+        "This will permanently delete the entire discussion and its posts.",
+        true
+      );
+
+
+    if (!confirmed) {
+      return;
+    }
+
+
+    try {
+
+      const response =
+        await fetch(
+          `/api/threads/${encodeURIComponent(
+            threadId
+          )}`,
+          {
+            method: "DELETE",
+
+            headers:
+              getAuthHeaders()
+          }
+        );
+
+
+      const data =
+        await response
+          .json()
+          .catch(
+            () => ({})
+          );
+
+
+      if (!response.ok) {
+
+        throw new Error(
+          data.error ||
+          data.detail ||
+          "Could not delete thread."
+        );
+      }
+
+
+      window.location.href =
+        "/forums.html";
+
+    } catch (error) {
+
+      showDialog(
+        "Delete failed",
+        error.message,
+        "error"
+      );
+    }
+  }
+
+
+  /* =========================================================
+     LOGIN BUTTONS
+  ========================================================= */
+
+  replyLoginButton.addEventListener(
+    "click",
+    openLogin
+  );
+
+
+  /* =========================================================
+     START
+  ========================================================= */
+
+  updateLoginButton();
+
+  loadThread();
+
+</script>
+
 </body>
 </html>

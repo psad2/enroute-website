@@ -412,22 +412,27 @@
 </div>
 
 <header id="site-header">
-  <div class="brand">
+  <a href="/" class="brand">
     <span class="brand-badge">ERT</span>
     <span class="brand-word">EN ROUTE</span>
-  </div>
+  </a>
+
   <nav class="tabs">
-    <a href="fleet.html">Fleet</a>
+    <a href="/fleet.html">Fleet</a>
     <a href="#crew">Crew</a>
     <a href="#about">About</a>
-    <a href="#">Route Map</a>
-    <a href="register.html">Careers</a>
+    <a href="/route-map.html">Route Map</a>
+    <a href="/register.html">Careers</a>
+    <a href="/forums.html">Forum</a>
   </nav>
-  <a href="#" class="book-btn">Book a Flight <span class="arrow">→</span></a>
+
+  <a href="/" class="book-btn">
+    Home <span class="arrow">→</span>
+  </a>
 </header>
 
 <section id="hero" data-waypoint="DEP">
-  <img id="hero-img" src="a320left.png" alt="Airbus A320neo aircraft in flight">
+  <img id="hero-img" src="images/a320left.png" alt="Airbus A320neo aircraft in flight">
   <div id="hud">
     <div>ALT <span class="val">37,000 FT</span></div>
     <div>GS <span class="val">462 KT</span></div>
@@ -451,13 +456,19 @@
 
 <section id="fleet" data-waypoint="FLEET">
   <div class="container">
+
     <div class="section-head reveal">
       <p class="eyebrow">Our Fleet</p>
-      <h2>Two airframes. One mission.</h2>
-      <p>A lean, modern narrow-body fleet built around the A320neo family — efficient enough to fly often, capable enough to fly far.</p>
+      <h2>Five airframes. One network.</h2>
+      <p>
+        From regional connectors to long-haul flagships — our fleet is built
+        to cover every route in the En Route network.
+      </p>
     </div>
+
     <div class="fleet-table-wrap reveal">
       <table class="fleet">
+
         <thead>
         <tr>
           <th>Type</th>
@@ -465,30 +476,109 @@
           <th>Seats</th>
           <th>Range</th>
           <th>Cruise</th>
-          <th>In Fleet</th>
+          <th>Role</th>
         </tr>
         </thead>
+
         <tbody>
+
+        <!-- A320 -->
         <tr>
-          <td><span class="plane-icon">✈</span><span class="type-name">Airbus A320neo</span><div class="type-sub">Placeholder — short/medium-haul workhorse</div></td>
-          <td class="mono">A20N</td>
+          <td>
+            <span class="plane-icon">✈</span>
+            <span class="type-name">Airbus A320</span>
+            <div class="type-sub">
+              Narrowbody · Fleet backbone
+            </div>
+          </td>
+
+          <td class="mono">A320</td>
           <td class="mono">180</td>
-          <td class="mono">3,400 NM</td>
+          <td class="mono">3,300 NM</td>
           <td class="mono">M0.78</td>
-          <td class="mono">08</td>
+          <td class="mono">CORE</td>
         </tr>
+
+        <!-- A321neo -->
         <tr>
-          <td><span class="plane-icon">✈</span><span class="type-name">Airbus A321neo</span><div class="type-sub">Placeholder — high-density &amp; long-range legs</div></td>
+          <td>
+            <span class="plane-icon">✈</span>
+            <span class="type-name">Airbus A321neo</span>
+            <div class="type-sub">
+              Narrowbody · High-density / long-range
+            </div>
+          </td>
+
           <td class="mono">A21N</td>
           <td class="mono">220</td>
           <td class="mono">4,000 NM</td>
           <td class="mono">M0.78</td>
-          <td class="mono">04</td>
+          <td class="mono">TRUNK</td>
         </tr>
+
+        <!-- A220-300 -->
+        <tr>
+          <td>
+            <span class="plane-icon">✈</span>
+            <span class="type-name">Airbus A220-300</span>
+            <div class="type-sub">
+              Narrowbody · Thin-route specialist
+            </div>
+          </td>
+
+          <td class="mono">BCS3</td>
+          <td class="mono">160</td>
+          <td class="mono">3,350 NM</td>
+          <td class="mono">M0.78</td>
+          <td class="mono">REGIONAL</td>
+        </tr>
+
+        <!-- E190 -->
+        <tr>
+          <td>
+            <span class="plane-icon">✈</span>
+            <span class="type-name">Embraer E190</span>
+            <div class="type-sub">
+              Regional Jet · Hub connector
+            </div>
+          </td>
+
+          <td class="mono">E190</td>
+          <td class="mono">100</td>
+          <td class="mono">2,450 NM</td>
+          <td class="mono">M0.78</td>
+          <td class="mono">FEEDER</td>
+        </tr>
+
+        <!-- 777-300ER -->
+        <tr>
+          <td>
+            <span class="plane-icon">✈</span>
+            <span class="type-name">Boeing 777-300ER</span>
+            <div class="type-sub">
+              Widebody · Long-haul flagship
+            </div>
+          </td>
+
+          <td class="mono">B77W</td>
+          <td class="mono">396</td>
+          <td class="mono">7,370 NM</td>
+          <td class="mono">M0.84</td>
+          <td class="mono">FLAGSHIP</td>
+        </tr>
+
         </tbody>
+
       </table>
     </div>
-    <p class="fleet-note reveal">Fleet data shown is placeholder — swap in your real registrations, seat counts and MSNs. <a href="fleet.html" class="link-cta primary" style="margin-left:6px;">See full fleet specs <span class="arrow">→</span></a></p>
+
+    <p class="fleet-note reveal">
+      Five aircraft types currently form the En Route fleet.
+      <a href="fleet.html" class="link-cta primary" style="margin-left:6px;">
+        See full fleet specs <span class="arrow">→</span>
+      </a>
+    </p>
+
   </div>
 </section>
 
@@ -571,19 +661,24 @@
         <span class="brand-badge">ERT</span>
         <span class="brand-word">EN ROUTE</span>
       </div>
-      <p>A community virtual airline built around the A320 family. Placeholder blurb — say who you are in one or two sentences.</p>
+
+      <p>
+        A community-driven virtual airline built for flight sim enthusiasts.
+        Fly scheduled routes, build your pilot career, and fly alongside a
+        growing community across the En Route network.
+      </p>
     </div>
     <div class="footer-col">
       <h4>Navigate</h4>
       <a href="fleet.html">Fleet</a>
       <a href="#crew">Crew</a>
       <a href="#about">About</a>
-      <a href="#">Route Map</a>
+      <a href="/route-map.html">Route Map</a>
       <a href="#">Careers</a>
     </div>
     <div class="footer-col">
       <h4>Community</h4>
-      <a href="#">Discord</a>
+      <a href="https://discord.gg/HcaUkpPRsw">Discord</a>
       <a href="#">Forums</a>
       <a href="#">Instagram</a>
       <a href="#">Charts &amp; Docs</a>
@@ -681,13 +776,16 @@
 
   onScroll();
 
-  // =========================================================
-  // LOAD CREW FROM PYTHON BACKEND
-  // =========================================================
 
   async function loadCrew() {
 
     const crewList = document.getElementById("crew-list");
+
+    // ONLY these user IDs will be displayed on the frontpage.
+    // Change these numbers to the IDs of the users you want.
+    const featuredCrew = [
+
+    ];
 
     try {
 
@@ -699,18 +797,23 @@
 
       const crew = await response.json();
 
+      // Only display users whose ID is in featuredCrew
+      const selectedCrew = crew.filter(member =>
+        featuredCrew.includes(Number(member.id))
+      );
+
       crewList.innerHTML = "";
 
-      if (crew.length === 0) {
+      if (selectedCrew.length === 0) {
 
         crewList.innerHTML = `
-                <p>No crew members yet.</p>
+                <p>No crew members selected.</p>
             `;
 
         return;
       }
 
-      crew.forEach(member => {
+      selectedCrew.forEach(member => {
 
         const card = document.createElement("div");
 
@@ -737,7 +840,6 @@
         crewList.appendChild(card);
       });
 
-      // Make the cards visible
       crewList.classList.add("is-visible");
 
     } catch (error) {
