@@ -1,16 +1,44 @@
 from flask import Flask, request, jsonify, send_from_directory
 import sqlite3
+import markdown
+import bleach
 from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
 
 DATABASE = "forum.db"
 
+# Tags/attributes allowed in rendered markdown output (prevents stored XSS)
+ALLOWED_TAGS = [
+    "p", "br", "strong", "em", "u", "s", "code", "pre",
+    "blockquote", "ul", "ol", "li", "a", "h1", "h2", "h3",
+    "h4", "h5", "h6", "hr", "img"
+]
+ALLOWED_ATTRS = {
+    "a": ["href", "title", "rel"],
+    "img": ["src", "alt", "title"]
+}
+
 
 def db():
     connection = sqlite3.connect(DATABASE)
     connection.row_factory = sqlite3.Row
     return connection
+
+
+def render_markdown(raw_text):
+    """Convert raw markdown to sanitized HTML safe to render on the frontend."""
+    html = markdown.markdown(
+        raw_text,
+        extensions=["extra", "nl2br", "sane_lists"]
+    )
+    clean_html = bleach.clean(
+        html,
+        tags=ALLOWED_TAGS,
+        attributes=ALLOWED_ATTRS,
+        strip=True
+    )
+    return clean_html
 
 
 # =========================================================
@@ -25,7 +53,9 @@ def init_db():
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             username TEXT UNIQUE NOT NULL,
             email TEXT UNIQUE NOT NULL,
-            password TEXT NOT NULL
+            password TEXT NOT NULL,
+            bio TEXT DEFAULT '',
+            joined_at DATETIME DEFAULT CURRENT_TIMESTAMP
         );
 
         CREATE TABLE IF NOT EXISTS categories (
@@ -203,6 +233,7 @@ def threads():
             threads.title,
             threads.content,
             threads.created_at,
+            threads.user_id,
             users.username,
             categories.name AS category
         FROM threads
@@ -215,10 +246,14 @@ def threads():
 
     connection.close()
 
-    return jsonify([
-        dict(row)
-        for row in rows
-    ])
+    results = []
+
+    for row in rows:
+        item = dict(row)
+        item["content_html"] = render_markdown(item["content"])
+        results.append(item)
+
+    return jsonify(results)
 
 
 # =========================================================
@@ -310,12 +345,63 @@ def get_thread(thread_id):
 
     connection.close()
 
+    thread_dict = dict(thread)
+    thread_dict["content_html"] = render_markdown(thread_dict["content"])
+
+    posts_list = []
+    for post in posts:
+        post_dict = dict(post)
+        post_dict["content_html"] = render_markdown(post_dict["content"])
+        posts_list.append(post_dict)
+
     return jsonify({
-        "thread": dict(thread),
-        "posts": [
-            dict(post)
-            for post in posts
-        ]
+        "thread": thread_dict,
+        "posts": posts_list
+    })
+
+
+# =========================================================
+# DELETE THREAD
+# =========================================================
+
+@app.delete("/api/threads/<int:thread_id>")
+def delete_thread(thread_id):
+
+    data = request.get_json(silent=True) or {}
+    user_id = data.get("user_id")
+
+    if not user_id:
+        return jsonify({
+            "error": "user_id is required"
+        }), 400
+
+    connection = db()
+
+    thread = connection.execute(
+        "SELECT * FROM threads WHERE id = ?",
+        (thread_id,)
+    ).fetchone()
+
+    if not thread:
+        connection.close()
+        return jsonify({
+            "error": "Thread not found"
+        }), 404
+
+    if thread["user_id"] != user_id:
+        connection.close()
+        return jsonify({
+            "error": "You can only delete your own threads"
+        }), 403
+
+    connection.execute("DELETE FROM posts WHERE thread_id = ?", (thread_id,))
+    connection.execute("DELETE FROM threads WHERE id = ?", (thread_id,))
+
+    connection.commit()
+    connection.close()
+
+    return jsonify({
+        "message": "Thread deleted"
     })
 
 
@@ -338,7 +424,7 @@ def reply(thread_id):
 
     connection = db()
 
-    connection.execute(
+    cursor = connection.execute(
         """
         INSERT INTO posts
         (thread_id, content, user_id)
@@ -352,11 +438,110 @@ def reply(thread_id):
     )
 
     connection.commit()
+
+    post_id = cursor.lastrowid
+
     connection.close()
 
     return jsonify({
-        "message": "Reply posted"
+        "message": "Reply posted",
+        "post_id": post_id
     }), 201
+
+
+# =========================================================
+# EDIT POST
+# =========================================================
+
+@app.put("/api/posts/<int:post_id>")
+def edit_post(post_id):
+
+    data = request.get_json()
+
+    user_id = data.get("user_id")
+    content = data.get("content")
+
+    if not user_id or not content:
+        return jsonify({
+            "error": "user_id and content are required"
+        }), 400
+
+    connection = db()
+
+    post = connection.execute(
+        "SELECT * FROM posts WHERE id = ?",
+        (post_id,)
+    ).fetchone()
+
+    if not post:
+        connection.close()
+        return jsonify({
+            "error": "Post not found"
+        }), 404
+
+    if post["user_id"] != user_id:
+        connection.close()
+        return jsonify({
+            "error": "You can only edit your own posts"
+        }), 403
+
+    connection.execute(
+        "UPDATE posts SET content = ? WHERE id = ?",
+        (content, post_id)
+    )
+
+    connection.commit()
+    connection.close()
+
+    return jsonify({
+        "message": "Post updated",
+        "content_html": render_markdown(content)
+    })
+
+
+# =========================================================
+# DELETE POST
+# =========================================================
+
+@app.delete("/api/posts/<int:post_id>")
+def delete_post(post_id):
+
+    data = request.get_json(silent=True) or {}
+    user_id = data.get("user_id")
+
+    if not user_id:
+        return jsonify({
+            "error": "user_id is required"
+        }), 400
+
+    connection = db()
+
+    post = connection.execute(
+        "SELECT * FROM posts WHERE id = ?",
+        (post_id,)
+    ).fetchone()
+
+    if not post:
+        connection.close()
+        return jsonify({
+            "error": "Post not found"
+        }), 404
+
+    if post["user_id"] != user_id:
+        connection.close()
+        return jsonify({
+            "error": "You can only delete your own posts"
+        }), 403
+
+    connection.execute("DELETE FROM posts WHERE id = ?", (post_id,))
+
+    connection.commit()
+    connection.close()
+
+    return jsonify({
+        "message": "Post deleted"
+    })
+
 
 # =========================================================
 # CREW
@@ -393,6 +578,104 @@ def crew():
         })
 
     return jsonify(crew_list)
+
+
+# =========================================================
+# USER PROFILE
+# =========================================================
+
+@app.get("/api/users/<int:user_id>")
+def get_profile(user_id):
+
+    connection = db()
+
+    user = connection.execute(
+        """
+        SELECT id, username, email, bio, joined_at
+        FROM users
+        WHERE id = ?
+        """,
+        (user_id,)
+    ).fetchone()
+
+    if not user:
+        connection.close()
+        return jsonify({
+            "error": "User not found"
+        }), 404
+
+    threads = connection.execute(
+        """
+        SELECT id, title, created_at
+        FROM threads
+        WHERE user_id = ?
+        ORDER BY created_at DESC
+        LIMIT 10
+        """,
+        (user_id,)
+    ).fetchall()
+
+    thread_count = connection.execute(
+        "SELECT COUNT(*) AS c FROM threads WHERE user_id = ?",
+        (user_id,)
+    ).fetchone()["c"]
+
+    post_count = connection.execute(
+        "SELECT COUNT(*) AS c FROM posts WHERE user_id = ?",
+        (user_id,)
+    ).fetchone()["c"]
+
+    connection.close()
+
+    profile = dict(user)
+    profile["thread_count"] = thread_count
+    profile["post_count"] = post_count
+    profile["recent_threads"] = [dict(t) for t in threads]
+
+    return jsonify(profile)
+
+
+# =========================================================
+# EDIT PROFILE (bio)
+# =========================================================
+
+@app.put("/api/users/<int:user_id>")
+def edit_profile(user_id):
+
+    data = request.get_json()
+
+    requester_id = data.get("user_id")
+    bio = data.get("bio", "")
+
+    if requester_id != user_id:
+        return jsonify({
+            "error": "You can only edit your own profile"
+        }), 403
+
+    connection = db()
+
+    user = connection.execute(
+        "SELECT id FROM users WHERE id = ?",
+        (user_id,)
+    ).fetchone()
+
+    if not user:
+        connection.close()
+        return jsonify({
+            "error": "User not found"
+        }), 404
+
+    connection.execute(
+        "UPDATE users SET bio = ? WHERE id = ?",
+        (bio, user_id)
+    )
+
+    connection.commit()
+    connection.close()
+
+    return jsonify({
+        "message": "Profile updated"
+    })
 
 
 # =========================================================
