@@ -94,6 +94,42 @@
       }
 
       /* =====================================================
+         PASSWORD REQUIREMENTS
+         =====================================================  */
+
+      .password-requirements {
+          margin-top: 9px;
+
+          padding: 10px 12px;
+
+          border: 1px solid var(--line);
+
+          background: rgba(0, 0, 0, 0.12);
+
+          font-family: var(--mono);
+          font-size: 9px;
+
+          line-height: 1.8;
+      }
+
+      .password-requirement {
+          color: var(--text-muted);
+
+          transition:
+                  color 0.15s ease,
+                  opacity 0.15s ease;
+      }
+
+      .password-requirement.valid {
+          color: var(--green);
+      }
+
+      .password-requirement.invalid {
+          color: var(--red);
+      }
+
+
+      /* =====================================================
          HEADER
          ===================================================== */
 
@@ -598,10 +634,12 @@
 
   <div class="header">
 
+    <a href="/frontpage.html" class="brand">
     <div class="brand">
       <span class="badge">ERT</span>
       <span class="brand-name">EN ROUTE</span>
     </div>
+    </a>
 
     <div class="eyebrow">
       Crew Registration
@@ -688,6 +726,45 @@
         required
       >
 
+      <div class="password-requirements">
+
+        <div
+          class="password-requirement invalid"
+          id="req-length"
+        >
+          ✘ - At least 8 characters long
+        </div>
+
+        <div
+          class="password-requirement invalid"
+          id="req-uppercase"
+          >
+          ✘ - At least 1 uppercase letter
+        </div>
+
+        <div
+          class="password-requirement invalid"
+          id="req-lowercase"
+          >
+          ✘ - At least 1 lowercase letter
+        </div>
+
+        <div
+          class="password-requirement invalid"
+          id="req-number"
+          >
+          ✘ - At least 1 number
+        </div>
+
+        <div
+          class="password-requirement invalid"
+          id="req-special"
+          >
+          ✘ - At least 1 special character
+        </div>
+
+      </div>
+
     </div>
 
 
@@ -734,7 +811,7 @@
 
 
     <a
-      href="index.html"
+      href="frontpage.html"
       class="back"
     >
       ← Back to En Route
@@ -835,6 +912,21 @@
   const successEmail = document.getElementById("successEmail");
   const pilotIdElement = document.getElementById("pilotId");
 
+  const passwordInput =
+    document.getElementById("password");
+
+  const passwordConfirmInput =
+    document.getElementById("passwordConfirm");
+
+  const passwordRequirements = {
+    length: document.getElementById("req-length"),
+    uppercase: document.getElementById("req-uppercase"),
+    lowercase: document.getElementById("req-lowercase"),
+    number: document.getElementById("req-number"),
+    special: document.getElementById("req-special")
+  };
+
+
 
   /* =========================================================
      MESSAGE
@@ -853,6 +945,96 @@
     message.classList.remove("show", "success");
   }
 
+  function validatePassword(password) {
+
+    return{
+      length: password.length >= 8,
+      uppercase: /[A-Z]/.test(password),
+      lowercase: /[a-z]/.test(password),
+      number: /[0-9]/.test(password),
+      special: /[^A-Za-z0-9]/.test(password)
+    };
+  }
+
+  function updatePasswordRequirements() {
+
+    const password =
+      passwordInput.value;
+
+    const checks =
+      validatePassword(password);
+
+
+    Object.entries(checks).forEach(
+      ([requirement, valid]) => {
+
+        const element =
+          passwordRequirements[requirement];
+
+        element.classList.toggle(
+          "valid",
+          valid
+        );
+
+        element.classList.toggle(
+          "invalid",
+          !valid
+        );
+
+        const passwordRequirements = {
+          length: {
+            element: document.getElementById("req-length"),
+            text: "At least 8 characters"
+          },
+          uppercase: {
+            element: document.getElementById("req-uppercase"),
+            text: "At least 1 uppercase letter"
+          },
+          lowercase: {
+            element: document.getElementById("req-lowercase"),
+            text: "At least 1 lowercase letter"
+          },
+          number: {
+            element: document.getElementById("req-number"),
+            text: "At least 1 number"
+          },
+          special: {
+            element: document.getElementById("req-special"),
+            text: "At least 1 special character"
+          }
+        };
+
+        function updatePasswordRequirements() {
+          const checks = validatePassword(passwordInput.value);
+
+          Object.entries(checks).forEach(([key, valid]) => {
+            const requirement = passwordRequirements[key];
+
+            requirement.element.classList.toggle("valid", valid);
+            requirement.element.classList.toggle("invalid", !valid);
+
+            requirement.element.textContent =
+              `${valid ? "✓" : "✗"} ${requirement.text}`;
+          });
+        }
+      }
+    );
+
+  }
+
+  function isPasswordValid(password) {
+
+    const checks =
+      validatePassword(password);
+
+    return Object.values(checks)
+      .every(Boolean);
+  }
+
+  passwordInput.addEventListener(
+    "input",
+    updatePasswordRequirements
+  );
 
   /* =========================================================
      FORM SUBMISSION
@@ -916,11 +1098,15 @@
     }
 
 
-    if (password.length < 8) {
+    if (!isPasswordValid(password)) {
 
       showMessage(
-        "Password must contain at least 8 characters."
+        "Password must contain at least 8 characters, " +
+        "1 uppercase letterm 1 lowercase letter, " +
+        "1 number, and 1 special character."
       );
+
+      passwordInput.focus();
 
       return;
     }
