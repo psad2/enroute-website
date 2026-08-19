@@ -3,9 +3,9 @@ import java.util.concurrent.ConcurrentHashMap
 // simple in-process fixed-window rate limiter -- mirrors the flask_limiter
 // tiers app.py already has on /api/register and /api/login
 class RateLimiter(private val limit: Int, private val windowMillis: Long) {
-    private class Window(var count: Int, var windowStart: Long)
+    internal class Window(var count: Int, var windowStart: Long)
 
-    private val buckets = ConcurrentHashMap<String, Window>()
+    internal val buckets = ConcurrentHashMap<String, Window>()
 
     @Synchronized
     fun tryAcquire(key: String): Boolean {
