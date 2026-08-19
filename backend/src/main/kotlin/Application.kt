@@ -27,8 +27,9 @@ fun main() {
 fun Application.module() {
     initDb()
 
-    // snake_case wire format -- the existing frontend (forums.html, thread.html)
-    // reads keys like thread_id/created_at/content_html, matching app.py's jsonify() output
+    // All JSON output uses snake_case keys, for example thread_id and content_html.
+    // The frontend (forums.html, thread.html) reads these exact key names.
+    // This also matches the key format from app.py's jsonify() output.
     install(ContentNegotiation) {
         json(
             Json {
@@ -38,6 +39,10 @@ fun Application.module() {
         )
     }
 
+    // This catches every otherwise-unhandled exception in a route.
+    // It sends a generic message to the client. It does not send the real
+    // exception message or a stack trace. This stops internal error detail
+    // from reaching an attacker.
     install(StatusPages) {
         exception<Throwable> { call, _ ->
             call.respond(
