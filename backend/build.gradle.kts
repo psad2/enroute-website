@@ -24,7 +24,9 @@ dependencies {
     implementation("org.commonmark:commonmark:0.21.0")
     implementation("org.jsoup:jsoup:1.17.2")
 
-    testImplementation(kotlin("test"))
+    testImplementation(kotlin("test-junit5"))
+    testImplementation("io.ktor:ktor-server-test-host:$ktorVersion")
+    testImplementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
 }
 
 application {
@@ -33,4 +35,8 @@ application {
 
 kotlin {
     jvmToolchain(17)
+}
+
+tasks.test {
+    useJUnitPlatform()
 }
