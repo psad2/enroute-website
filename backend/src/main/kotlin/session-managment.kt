@@ -13,7 +13,7 @@ import io.ktor.server.routing.post
 import kotlinx.serialization.Serializable
 import java.util.Locale
 
-// request & response models
+// These are the request and response bodies for register, login, and logout.
 @Serializable
 data class RegisterRequest(
     val username: String?,
@@ -34,7 +34,7 @@ data class LoginResponse(
     val user: PublicUser
 )
 
-// register
+// This registers a new user account.
 fun Route.registerRoute() {
     post("/api/register") {
         val clientKey = call.request.origin.remoteHost
@@ -64,7 +64,7 @@ fun Route.registerRoute() {
         val email = data.email?.trim()?.lowercase(Locale.ROOT) ?: ""
         val password = data.password ?: ""
 
-        // validation
+        // This checks that all required fields are present and not blank.
         if (
             username.isBlank() ||
             email.isBlank() ||
@@ -120,7 +120,7 @@ fun Route.registerRoute() {
             return@post
         }
 
-        // database
+        // This checks the username and email are free, then creates the user.
         db().use { connection ->
             val usernameTaken = connection.prepareStatement(
                 """
@@ -161,7 +161,7 @@ fun Route.registerRoute() {
                 return@post
             }
 
-            // pass hashing implementation
+            // This never stores the raw password, only the PBKDF2 hash.
             val passwordHash = hashPassword(password)
 
             connection.prepareStatement(
@@ -191,7 +191,7 @@ fun Route.registerRoute() {
     }
 }
 
-// login
+// This logs in an existing user and creates a session.
 fun Route.loginRoute() {
     post("/api/login") {
         val clientKey = call.request.origin.remoteHost
@@ -244,7 +244,7 @@ fun Route.loginRoute() {
         )
 
         db().use { connection ->
-            // find user
+            // This looks up the user by username.
             val user = connection.prepareStatement(
                 """
                 SELECT
@@ -272,7 +272,7 @@ fun Route.loginRoute() {
                 }
             }
 
-            // password verify
+            // This checks the password against the stored hash.
             if (
                 user == null ||
                 !verifyPassword(password, user.passwordHash)
@@ -284,7 +284,7 @@ fun Route.loginRoute() {
                 return@post
             }
 
-            // create session
+            // This creates the session and returns the raw token to the client.
             val token = createSession(connection, user.id)
 
             call.respond(
@@ -303,7 +303,7 @@ fun Route.loginRoute() {
     }
 }
 
-// logout
+// This ends the caller's session.
 fun Route.logoutRoute() {
     post("/api/logout") {
         val token = call.bearerToken()
