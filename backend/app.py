@@ -11,12 +11,56 @@ import markdown
 from flask import Flask, request, jsonify, send_from_directory, g
 from werkzeug.security import generate_password_hash, check_password_hash
 
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
+from werkzeug.middleware.proxy_fix import ProxyFix
+
 
 # =========================================================
 # APP
 # =========================================================
 
 app = Flask(__name__)
+
+# flask rate limiter
+
+app.wsgi_app = ProxyFix(
+    app.wsgi_app,
+    x_for=1,
+    x_proto=1,
+    x_host=1,
+)
+
+limiter = Limiter(
+    key_func = get_remote_address,
+    app = app,
+    storage_uri = os.getenv(
+        "RATELIMIT_STORAGE_URI = redis://127.0.0.1:6379/0",
+        "memory://",
+    ),
+    strategy = "fixed+window",
+    default_limits = [],
+)
+
+def login_username_key():
+    data = request.get_json(silent = True)
+    """
+    Returns normalized username for login rate limiting.
+    Prevents bypassing the limit through changing IPs
+    """
+
+    if not isinstance(data, dict):
+        return "invalid-login"
+
+    username = str(
+        data.get("username") or ""
+    ).strip().lower()
+
+    if not username:
+        return "empty-login-username"
+
+    return username
+
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.abspath(os.path.join(BASE_DIR, ".."))
@@ -482,7 +526,6 @@ def public_user(user):
 
     return data
 
-
 # =========================================================
 # AUTH
 # =========================================================
@@ -701,6 +744,15 @@ def serialize_post(connection, post, user_id=None):
 # =========================================================
 
 @app.post("/api/register")
+#login limiting
+@limiter.limit(
+    "5 per minute",
+    error_message="Too many registration attempts. Please try again later.",
+)
+@limiter.limit(
+    "20 per hour",
+    error_message="Too many registration attempts. Please try again later.",
+)
 def register():
     data = get_json_body()
 
@@ -820,12 +872,37 @@ def register():
         "message": "Account created",
     }), 201
 
+# adds error 429 too many requests
+@app.errorhandler(429)
+def rate_limit_exceeded(error):
+    if request.path.startswith("/api/"):
+        retry_after = getattr(
+            error,
+            "description",
+            "Too many requests. Please try again later.",
+        )
+
+        return jsonify({
+            "error": str(retry_after),
+        }), 429
+
+    return error
+
 
 # =========================================================
 # LOGIN
 # =========================================================
 
 @app.post("/api/login")
+@limiter.limit(
+    "10 per minute",
+    error_message="Too many login attempts. Please try again later.",
+)
+@limiter.limit(
+    "5 per minute",
+    key_func=login_username_key,
+    error_message="Too many login attempts for this account. Please try again later.",
+)
 def login():
     data = get_json_body()
 

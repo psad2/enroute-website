@@ -28,7 +28,7 @@ dist-ssr
 how2run
 
 
-/forum-backend/.venv/
-/forum-backend/forum.db
+/backend/.venv/
+/backend/forum.db
 
 /local-only/
