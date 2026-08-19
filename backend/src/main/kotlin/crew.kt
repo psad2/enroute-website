@@ -13,6 +13,9 @@ data class CrewMember(
     val role: String
 )
 
+// This lists every registered user, not just moderators or admins.
+// The name "crew" comes from the site theme, a virtual airline. It does
+// not mean this endpoint filters by role.
 fun Route.crewRoute() {
     get("/api/crew") {
         db().use { connection ->
