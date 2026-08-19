@@ -10,7 +10,7 @@ fun db(): Connection {
 
     connection.createStatement().use {
         stmt ->
-        stmt.execute("PRAGMA foreign_keys = OON")
+        stmt.execute("PRAGMA foreign_keys = ON")
         stmt.execute("PRAGMA journal_mode = WAL")
     }
 
@@ -36,7 +36,7 @@ fun tableExists(connection: Connection, table: String): Boolean {
         FROM sqlite_master
         WHERE type = 'table'
             AND name = ?
-        """.trimIdent()
+        """.trimIndent()
     ).use {
         stmt ->
         stmt.setString(1, table)
@@ -63,7 +63,17 @@ fun initDb() {
                 role TEXT DEFAULT 'user',
                 joined_at DATETIME DEFAULT CURRENT_TIMESTAMP
            )
-           """.trimIdent()
+           """.trimIndent()
+        )
+
+        // categories table
+        stmt.executeUpdate(
+            """
+            CREATE TABLE IF NOT EXISTS categories (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT UNIQUE NOT NULL
+            )
+            """.trimIndent()
         )
 
         // sessions table
@@ -72,14 +82,14 @@ fun initDb() {
             CREATE TABLE IF NOT EXISTS sessions (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 user_id INTEGER NOT NULL,
-                token_hash TEXT UNQIUE NOT NULL UNIQUE,
+                token_hash TEXT UNIQUE NOT NULL,
                 expires_at TEXT NOT NULL,
-                
+
                 FOREIGN KEY(user_id)
-                    REFERENCES user(id)
-                    
+                    REFERENCES users(id)
+
             )
-            """.trimIdent()
+            """.trimIndent()
         )
 
         // thread table
@@ -94,15 +104,15 @@ fun initDb() {
                 pinned INTEGER DEFAULT 0,
                 locked INTEGER DEFAULT 0,
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-                
+
                 FOREIGN KEY(user_id)
                     REFERENCES users(id)
                     ON DELETE CASCADE,
-                
+
                 FOREIGN KEY(category_id)
-                    REFENCES categories(id)
+                    REFERENCES categories(id)
             )
-            """.trimIdent()
+            """.trimIndent()
         )
 
         // table for posts
@@ -226,7 +236,7 @@ fun initDb() {
         stmt ->
         for (category in categories) {
             stmt.setString(1, category)
-            stmt.executeUpdate
+            stmt.executeUpdate()
         }
     }
 
