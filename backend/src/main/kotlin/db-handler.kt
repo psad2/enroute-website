@@ -211,7 +211,7 @@ fun initDb() {
         stmt.executeUpdate("CREATE INDEX IF NOT EXISTS idx_posts_user ON posts(user_id)")
         stmt.executeUpdate("CREATE INDEX IF NOT EXISTS idx_posts_parent ON posts(parent_post_id)")
         stmt.executeUpdate("CREATE INDEX IF NOT EXISTS idx_posts_quote ON posts(quote_post_id)")
-        stmt.executeUpdate("CREATE INDEX IF NOT EXISTS idx_sessions_token ON sessions(token)")
+        stmt.executeUpdate("CREATE INDEX IF NOT EXISTS idx_sessions_token ON sessions(token_hash)")
         stmt.executeUpdate("CREATE INDEX IF NOT EXISTS idx_sessions_expires ON sessions(expires_at)")
         stmt.executeUpdate("CREATE INDEX IF NOT EXISTS idx_reports_status ON reports(status)")
         stmt.executeUpdate("CREATE INDEX IF NOT EXISTS idx_reactions_post ON reactions(post_id)")
