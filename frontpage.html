@@ -77,6 +77,13 @@
       max-width:520px;
       margin:0;
     }
+    .about-title{
+      font-family:var(--display);
+      font-weight:700;
+      font-size:clamp(30px,3.6vw,44px);
+      line-height:1.1;
+      margin:0 0 24px;
+    }
     .light-bg .section-head p{ color:var(--paper-muted); }
 
     /* ---------- reveal-on-scroll ---------- */
@@ -297,6 +304,7 @@
     .type-sub{ font-family:var(--mono); font-size:11.5px; color:var(--text-muted); margin-top:3px; }
     td.mono{ font-family:var(--mono); color:var(--text); }
     .fleet-note{ margin-top:22px; font-family:var(--mono); font-size:12px; color:var(--text-muted); }
+    .fleet-note .link-cta{ margin-left:6px; }
 
     /* ---------- crew ---------- */
     #crew{ background:var(--paper); color:var(--paper-ink); }
@@ -575,7 +583,7 @@
 
     <p class="fleet-note reveal">
       Five aircraft types currently form the En Route fleet.
-      <a href="fleet.html" class="link-cta primary" style="margin-left:6px;">
+      <a href="fleet.html" class="link-cta primary">
         See full fleet specs <span class="arrow">→</span>
       </a>
     </p>
@@ -594,7 +602,6 @@
     </div>
     <div id="crew-list" class="crew-grid reveal-stagger">
       <p>Loading crew...</p>
-    </div>
       <div class="crew-card">
         <div class="avatar">AK</div>
         <div class="crew-name">Placeholder Name</div>
@@ -635,7 +642,7 @@
   <div class="container about-grid">
     <div class="reveal">
       <p class="eyebrow">About Us</p>
-      <h2 style="font-family:var(--display);font-weight:700;font-size:clamp(30px,3.6vw,44px);line-height:1.1;margin:0 0 24px;">Why we fly.</h2>
+      <h2 class="about-title">Why we fly.</h2>
       <div class="about-copy">
         <p>En Route started as a handful of friends chasing the same sunset across three different flight sims. Placeholder mission copy — replace with your airline's real story.</p>
         <p>We're not trying to be a real airline. We're trying to be the best version of a hobby: scheduled flights, a real roster, real training, and a community that shows up week after week.</p>
