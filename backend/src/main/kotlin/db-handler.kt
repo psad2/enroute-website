@@ -2,7 +2,7 @@ import java.sql.Connection
 import java.sql.DriverManager
 import java.sql.ResultSet
 
-const val DATABASE = "forum.db"
+var DATABASE = System.getenv("DATABASE_PATH") ?: "forum.db"
 
 // connect to db
 fun db(): Connection {
