@@ -34,7 +34,6 @@ data class SearchResponse(
     val query: String,
     val page: Int,
     val perPage: Int,
-    val limit: Int,
     val threads: List<ThreadSearchResult>,
     val posts: List<PostSearchResult>
 )
@@ -174,7 +173,6 @@ fun Route.searchRoute() {
                     query = q,
                     page = pagination.page,
                     perPage = pagination.perPage,
-                    limit = pagination.perPage,
                     threads = threads,
                     posts = posts
                 )
