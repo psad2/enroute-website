@@ -47,7 +47,7 @@ val ALLOWED_ROLES = setOf("user", "moderator", "admin")
 
 fun Route.profileRoute() {
 
-    // USER PROFILE
+    // This returns a user's public profile, with their recent activity.
     get("/api/users/{userId}") {
         val userId = call.parameters["userId"]?.toLongOrNull()
 
@@ -168,7 +168,7 @@ fun Route.profileRoute() {
         }
     }
 
-    // EDIT PROFILE
+    // This lets a user change their own bio.
     put("/api/users/{userId}") {
         val userId = call.parameters["userId"]?.toLongOrNull()
 
@@ -231,7 +231,7 @@ fun Route.profileRoute() {
         }
     }
 
-    // ADMIN - CHANGE ROLE
+    // This lets an admin change another user's role.
     put("/api/users/{userId}/role") {
         val userId = call.parameters["userId"]?.toLongOrNull()
 
@@ -274,7 +274,7 @@ fun Route.profileRoute() {
                 return@put
             }
 
-            // prevent an admin from accidentally removing their own admin role
+            // This stops an admin from removing their own admin role by mistake.
             if (userId == user.id && role != "admin") {
                 call.respond(HttpStatusCode.BadRequest, ErrorResponse("You cannot remove your own admin role"))
                 return@put
