@@ -72,7 +72,9 @@ data class ErrorResponse(val error: String)
 @Serializable
 data class MessageResponse(val message: String)
 
-// pulls the bearer token off the Authorization header, like login_required did in app.py
+// This reads the session token from the Authorization header.
+// The header must have the form "Bearer <token>".
+// This matches the check login_required did in app.py.
 fun ApplicationCall.bearerToken(): String? {
     val header = request.headers["Authorization"] ?: return null
 
@@ -85,7 +87,9 @@ fun ApplicationCall.bearerToken(): String? {
     return token.ifBlank { null }
 }
 
-// binds a nullable id, since sqlite comparisons like "? IS NULL OR id != ?" need an actual SQL NULL
+// This sets a nullable Long parameter on a prepared statement.
+// A query like "? IS NULL OR id != ?" needs a real SQL NULL value.
+// A plain setLong call cannot send NULL, so this checks for null first.
 fun PreparedStatement.setNullableLong(index: Int, value: Long?) {
     if (value == null) {
         setNull(index, Types.BIGINT)
