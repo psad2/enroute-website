@@ -24,3 +24,5 @@ dist-ssr
 *.sw?
 
 how2run
+/forum-backend/.venv
+forum.db

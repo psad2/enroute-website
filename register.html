@@ -904,222 +904,221 @@
      REGISTRATION
      ========================================================= */
 
-  const registerForm = document.getElementById("registerForm");
-  const message = document.getElementById("message");
-  const submitButton = document.getElementById("submitButton");
+  <script>
+    /* =========================================================
+    REGISTRATION
+    ========================================================= */
 
-  const successState = document.getElementById("successState");
-  const successEmail = document.getElementById("successEmail");
-  const pilotIdElement = document.getElementById("pilotId");
+    const registerForm = document.getElementById("registerForm");
+    const message = document.getElementById("message");
+    const submitButton = document.getElementById("submitButton");
 
-  const passwordInput =
-    document.getElementById("password");
+    const successState = document.getElementById("successState");
+    const successEmail = document.getElementById("successEmail");
+    const pilotIdElement = document.getElementById("pilotId");
 
-  const passwordConfirmInput =
-    document.getElementById("passwordConfirm");
+    const passwordInput = document.getElementById("password");
+    const passwordConfirmInput = document.getElementById("passwordConfirm");
 
-  const passwordRequirements = {
-    length: document.getElementById("req-length"),
-    uppercase: document.getElementById("req-uppercase"),
-    lowercase: document.getElementById("req-lowercase"),
-    number: document.getElementById("req-number"),
-    special: document.getElementById("req-special")
+    const passwordRequirements = {
+    length: {
+    element: document.getElementById("req-length"),
+    text: "At least 8 characters"
+  },
+    uppercase: {
+    element: document.getElementById("req-uppercase"),
+    text: "At least 1 uppercase letter"
+  },
+    lowercase: {
+    element: document.getElementById("req-lowercase"),
+    text: "At least 1 lowercase letter"
+  },
+    number: {
+    element: document.getElementById("req-number"),
+    text: "At least 1 number"
+  },
+    special: {
+    element: document.getElementById("req-special"),
+    text: "At least 1 special character"
+  }
   };
 
 
+    /* =========================================================
+    MESSAGE
+    ========================================================= */
 
-  /* =========================================================
-     MESSAGE
-     ========================================================= */
-
-  function showMessage(text, success = false) {
+    function showMessage(text, success = false) {
     message.textContent = text;
-
     message.classList.add("show");
     message.classList.toggle("success", success);
   }
 
-
-  function hideMessage() {
+    function hideMessage() {
     message.textContent = "";
     message.classList.remove("show", "success");
   }
 
-  function validatePassword(password) {
 
-    return{
-      length: password.length >= 8,
-      uppercase: /[A-Z]/.test(password),
-      lowercase: /[a-z]/.test(password),
-      number: /[0-9]/.test(password),
-      special: /[^A-Za-z0-9]/.test(password)
-    };
+    /* =========================================================
+    PASSWORD VALIDATION
+    ========================================================= */
+
+    function validatePassword(password) {
+    return {
+    length: password.length >= 8,
+    uppercase: /[A-Z]/.test(password),
+    lowercase: /[a-z]/.test(password),
+    number: /[0-9]/.test(password),
+    special: /[^A-Za-z0-9]/.test(password)
+  };
   }
 
-  function updatePasswordRequirements() {
 
-    const password =
-      passwordInput.value;
+    function updatePasswordRequirements() {
+    const password = passwordInput.value;
+    const checks = validatePassword(password);
 
-    const checks =
-      validatePassword(password);
+    Object.entries(checks).forEach(([key, valid]) => {
+    const requirement = passwordRequirements[key];
 
+    requirement.element.classList.toggle("valid", valid);
+    requirement.element.classList.toggle("invalid", !valid);
 
-    Object.entries(checks).forEach(
-      ([requirement, valid]) => {
-
-        const element =
-          passwordRequirements[requirement];
-
-        element.classList.toggle(
-          "valid",
-          valid
-        );
-
-        element.classList.toggle(
-          "invalid",
-          !valid
-        );
-
-        const passwordRequirements = {
-          length: {
-            element: document.getElementById("req-length"),
-            text: "At least 8 characters"
-          },
-          uppercase: {
-            element: document.getElementById("req-uppercase"),
-            text: "At least 1 uppercase letter"
-          },
-          lowercase: {
-            element: document.getElementById("req-lowercase"),
-            text: "At least 1 lowercase letter"
-          },
-          number: {
-            element: document.getElementById("req-number"),
-            text: "At least 1 number"
-          },
-          special: {
-            element: document.getElementById("req-special"),
-            text: "At least 1 special character"
-          }
-        };
-
-        function updatePasswordRequirements() {
-          const checks = validatePassword(passwordInput.value);
-
-          Object.entries(checks).forEach(([key, valid]) => {
-            const requirement = passwordRequirements[key];
-
-            requirement.element.classList.toggle("valid", valid);
-            requirement.element.classList.toggle("invalid", !valid);
-
-            requirement.element.textContent =
-              `${valid ? "✓" : "✗"} ${requirement.text}`;
-          });
-        }
-      }
-    );
-
+    requirement.element.textContent =
+    `${valid ? "✓" : "✗"} - ${requirement.text}`;
+  });
   }
 
-  function isPasswordValid(password) {
 
-    const checks =
-      validatePassword(password);
-
-    return Object.values(checks)
-      .every(Boolean);
+    function isPasswordValid(password) {
+    const checks = validatePassword(password);
+    return Object.values(checks).every(Boolean);
   }
 
-  passwordInput.addEventListener(
+
+    /* Update requirements while typing */
+    passwordInput.addEventListener(
     "input",
     updatePasswordRequirements
-  );
+    );
 
-  /* =========================================================
-     FORM SUBMISSION
-     ========================================================= */
 
-  registerForm.addEventListener("submit", async function (event) {
+    /* Also update when the page loads */
+    updatePasswordRequirements();
+
+
+    /* =========================================================
+    PASSWORD CONFIRMATION
+    ========================================================= */
+
+    passwordConfirmInput.addEventListener("input", function () {
+    const password = passwordInput.value;
+    const confirmation = passwordConfirmInput.value;
+
+    if (!confirmation) {
+    passwordConfirmInput.style.borderColor = "";
+    return;
+  }
+
+    if (password === confirmation) {
+    passwordConfirmInput.style.borderColor = "var(--green)";
+  } else {
+    passwordConfirmInput.style.borderColor = "var(--red)";
+  }
+  });
+
+
+    /* =========================================================
+    FORM SUBMISSION
+    ========================================================= */
+
+    registerForm.addEventListener("submit", async function (event) {
 
     event.preventDefault();
-
     hideMessage();
 
-
-    /* -----------------------------------------------------
-       Get values
-       ----------------------------------------------------- */
-
     const username =
-      document.getElementById("username").value.trim();
+    document.getElementById("username").value.trim();
 
     const email =
-      document.getElementById("email").value.trim();
+    document.getElementById("email").value.trim();
 
     const password =
-      document.getElementById("password").value;
+    passwordInput.value;
 
     const passwordConfirm =
-      document.getElementById("passwordConfirm").value;
+    passwordConfirmInput.value;
 
 
     /* -----------------------------------------------------
-       Validation
+       Username
        ----------------------------------------------------- */
 
     if (username.length < 3) {
-
-      showMessage(
-        "Username must contain at least 3 characters."
-      );
-
-      return;
-    }
-
+    showMessage(
+    "Username must contain at least 3 characters."
+    );
+    return;
+  }
 
     if (username.length > 32) {
+    showMessage(
+    "Username must not exceed 32 characters."
+    );
+    return;
+  }
 
-      showMessage(
-        "Username must not exceed 32 characters."
-      );
 
-      return;
-    }
-
+    /* -----------------------------------------------------
+       Email
+       ----------------------------------------------------- */
 
     if (!email) {
+    showMessage(
+    "Please enter your email address."
+    );
+    return;
+  }
 
-      showMessage(
-        "Please enter your email address."
-      );
 
-      return;
-    }
-
+    /* -----------------------------------------------------
+       Password requirements
+       ----------------------------------------------------- */
 
     if (!isPasswordValid(password)) {
+    showMessage(
+    "Password must contain at least 8 characters, " +
+    "1 uppercase letter, 1 lowercase letter, " +
+    "1 number, and 1 special character."
+    );
 
-      showMessage(
-        "Password must contain at least 8 characters, " +
-        "1 uppercase letterm 1 lowercase letter, " +
-        "1 number, and 1 special character."
-      );
+    passwordInput.focus();
+    return;
+  }
 
-      passwordInput.focus();
 
-      return;
-    }
+    /* -----------------------------------------------------
+       Password confirmation
+       ----------------------------------------------------- */
 
+    if (!passwordConfirm) {
+    showMessage(
+    "Please confirm your password."
+    );
+
+    passwordConfirmInput.focus();
+    return;
+  }
 
     if (password !== passwordConfirm) {
+    showMessage(
+    "Passwords do not match."
+    );
 
-      showMessage(
-        "Passwords do not match."
-      );
-
-      return;
-    }
+    passwordConfirmInput.focus();
+    return;
+  }
 
 
     /* -----------------------------------------------------
@@ -1132,123 +1131,117 @@
 
     try {
 
-      /* -------------------------------------------------
-         Send registration request
-         ------------------------------------------------- */
+    const response = await fetch("/api/register", {
 
-      const response = await fetch("/api/register", {
+    method: "POST",
 
-        method: "POST",
+    headers: {
+    "Content-Type": "application/json"
+  },
 
-        headers: {
-          "Content-Type": "application/json"
-        },
+    body: JSON.stringify({
+    username: username,
+    email: email,
+    password: password
+  })
 
-        body: JSON.stringify({
-          username: username,
-          email: email,
-          password: password
-        })
-
-      });
+  });
 
 
-      /* -------------------------------------------------
-         Read server response safely
-         ------------------------------------------------- */
+    /* -------------------------------------------------
+       Read response
+       ------------------------------------------------- */
 
-      let data;
+    let data;
 
-      try {
-        data = await response.json();
-      } catch {
-        throw new Error(
-          "The server returned an invalid response."
-        );
-      }
-
-
-      console.log(
-        "REGISTER RESPONSE:",
-        response.status,
-        data
-      );
+    try {
+    data = await response.json();
+  } catch {
+    throw new Error(
+    "The server returned an invalid response."
+    );
+  }
 
 
-      /* -------------------------------------------------
-         Server returned an error
-         ------------------------------------------------- */
-
-      if (!response.ok) {
-
-        if (response.status === 409) {
-          throw new Error("This email is already registered.");
-        }
-
-        throw new Error(
-          data.detail ||
-          data.error ||
-          data.message ||
-          "Registration failed."
-        );
-
-      }
+    console.log(
+    "REGISTER RESPONSE:",
+    response.status,
+    data
+    );
 
 
-      /* -------------------------------------------------
-         Registration successful
-         ------------------------------------------------- */
+    /* -------------------------------------------------
+       Server error
+       ------------------------------------------------- */
 
-      console.log(
-        "Account created successfully:",
-        data
-      );
+    if (!response.ok) {
 
+    if (response.status === 409) {
+    throw new Error(
+    "This email is already registered."
+    );
+  }
 
-      const pilotId =
-        data.pilot_id ||
-        data.pilotId ||
-        data.id ||
-        "Generated successfully";
-
-
-      /* -------------------------------------------------
-         Show success screen
-         ------------------------------------------------- */
-
-      successEmail.textContent = email;
-      pilotIdElement.textContent = pilotId;
-
-      registerForm.style.display = "none";
-
-      successState.classList.add("show");
+    throw new Error(
+    data.detail ||
+    data.error ||
+    data.message ||
+    "Registration failed."
+    );
+  }
 
 
-    } catch (error) {
+    /* -------------------------------------------------
+       Registration successful
+       ------------------------------------------------- */
 
-      console.error(
-        "Registration error:",
-        error
-      );
-
-
-      showMessage(
-        error.message ||
-        "Could not connect to the En Route server."
-      );
+    console.log(
+    "Account created successfully:",
+    data
+    );
 
 
-    } finally {
+    const pilotId =
+    data.pilot_id ||
+    data.pilotId ||
+    data.id ||
+    "Generated successfully";
 
-      submitButton.disabled = false;
 
-      submitButton.textContent =
-        "Create Pilot Account →";
+    /* -------------------------------------------------
+       Show success screen
+       ------------------------------------------------- */
 
-    }
+    successEmail.textContent = email;
+    pilotIdElement.textContent = pilotId;
+
+    registerForm.style.display = "none";
+    successState.classList.add("show");
+
+
+  } catch (error) {
+
+    console.error(
+    "Registration error:",
+    error
+    );
+
+    showMessage(
+    error.message ||
+    "Could not connect to the En Route server."
+    );
+
+
+  } finally {
+
+    submitButton.disabled = false;
+
+    submitButton.textContent =
+    "Create Pilot Account →";
+
+  }
 
   });
 </script>
-
 </body>
 </html>
