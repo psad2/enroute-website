@@ -12,7 +12,8 @@ import kotlinx.serialization.json.contentOrNull
 import java.sql.Connection
 import java.sql.ResultSet
 
-// shape of a posts.* row joined with users.username, before serialization
+// This is a posts row joined with the poster's username.
+// It is the raw form, before serializePost adds derived fields.
 data class PostRecord(
     val id: Long,
     val threadId: Long,
@@ -147,7 +148,8 @@ data class SerializedPost(
     var parentPost: ParentPostSummary? = null
 )
 
-// mirrors serialize_post() from app.py -- adds content_html/reactions/user_reaction to a raw post row
+// This adds contentHtml, reactions, and userReaction to a raw post row.
+// It matches serialize_post() in app.py.
 fun serializePost(connection: Connection, post: PostRecord, userId: Long? = null): SerializedPost {
     return SerializedPost(
         id = post.id,
@@ -253,7 +255,7 @@ fun Route.reactionRoutes() {
 
             if (existing != null) {
                 if (existing.reaction == reaction) {
-                    // clicking the same reaction again removes it
+                    // A second click of the same reaction removes it.
                     connection.prepareStatement(
                         "DELETE FROM reactions WHERE id = ?"
                     ).use { stmt ->
@@ -263,7 +265,7 @@ fun Route.reactionRoutes() {
 
                     activeReaction = null
                 } else {
-                    // clicking another reaction switches it
+                    // A click of a different reaction switches to it.
                     connection.prepareStatement(
                         """
                         UPDATE reactions
