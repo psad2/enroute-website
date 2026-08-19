@@ -6,10 +6,19 @@ import java.sql.Connection
 import java.time.Instant
 import java.time.temporal.ChronoUnit
 import java.util.Base64
+import javax.crypto.SecretKeyFactory
+import javax.crypto.spec.PBEKeySpec
 
 const val TOKEN_EXPIRY_DAYS = 30L
 
 private val secureRandom = SecureRandom()
+
+data class AuthenticatedUser(
+    val id: Long,
+    val username: String,
+    val email: String,
+    val role: String
+)
 
 fun cleanupExpiredSessions(
     connection: Connection
@@ -190,4 +199,46 @@ private fun hashToken(
         .joinToString("") {
             "%02x".format(it)
         }
+}
+
+private const val PBKDF2_ITERATIONS = 210_000
+private const val PBKDF2_KEY_LENGTH_BITS = 256
+private const val PBKDF2_ALGORITHM = "PBKDF2WithHmacSHA256"
+
+// stored as pbkdf2_sha256$<iterations>$<base64 salt>$<base64 hash>
+fun hashPassword(password: String): String {
+    val salt = ByteArray(16)
+    secureRandom.nextBytes(salt)
+
+    val hash = pbkdf2(password, salt, PBKDF2_ITERATIONS)
+
+    return listOf(
+        "pbkdf2_sha256",
+        PBKDF2_ITERATIONS.toString(),
+        Base64.getEncoder().encodeToString(salt),
+        Base64.getEncoder().encodeToString(hash)
+    ).joinToString("$")
+}
+
+fun verifyPassword(password: String, stored: String): Boolean {
+    val parts = stored.split("$")
+
+    if (parts.size != 4 || parts[0] != "pbkdf2_sha256") {
+        return false
+    }
+
+    val iterations = parts[1].toIntOrNull() ?: return false
+    val salt = Base64.getDecoder().decode(parts[2])
+    val expectedHash = Base64.getDecoder().decode(parts[3])
+
+    val actualHash = pbkdf2(password, salt, iterations)
+
+    return MessageDigest.isEqual(actualHash, expectedHash)
+}
+
+private fun pbkdf2(password: String, salt: ByteArray, iterations: Int): ByteArray {
+    val spec = PBEKeySpec(password.toCharArray(), salt, iterations, PBKDF2_KEY_LENGTH_BITS)
+    val factory = SecretKeyFactory.getInstance(PBKDF2_ALGORITHM)
+
+    return factory.generateSecret(spec).encoded
 }
