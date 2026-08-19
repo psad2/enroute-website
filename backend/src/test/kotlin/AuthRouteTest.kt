@@ -27,7 +27,9 @@ class AuthRouteTest {
         tempFile.deleteOnExit()
         DATABASE = tempFile.absolutePath
 
-        // limiters are process-wide singletons; clear them so tests don't share state
+        // Each RateLimiter is a single shared object for the whole JVM run.
+        // Without this reset, an earlier test's calls would count against a
+        // later test's limit.
         registerLimiterPerMinute.buckets.clear()
         registerLimiterPerHour.buckets.clear()
         loginLimiterPerMinute.buckets.clear()
