@@ -202,11 +202,13 @@ fun Route.reportsRoute() {
                 threadId = threadId ?: postThreadId
             }
 
-            if (threadId != null) {
+            val currentThreadId = threadId
+
+            if (currentThreadId != null) {
                 val threadExists = connection.prepareStatement(
                     "SELECT id FROM threads WHERE id = ?"
                 ).use { stmt ->
-                    stmt.setLong(1, threadId)
+                    stmt.setLong(1, currentThreadId)
                     stmt.executeQuery().use { rs -> rs.next() }
                 }
 
