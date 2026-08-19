@@ -67,5 +67,7 @@ fun Application.module() {
         reportsRoute()
         searchRoute()
         threadsRoute()
+
+        staticFrontendRoutes()
     }
 }
