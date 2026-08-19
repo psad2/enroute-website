@@ -29,6 +29,11 @@ object MarkdownRenderer {
         return Jsoup.clean(rawHtml, safelist)
     }
 
+    // strips all html, keeps text only (used for user-supplied fields like bio)
+    fun sanitizePlain(text: String): String {
+        return Jsoup.clean(text, Safelist.none())
+    }
+
     // plaintext in previews
     fun renderPlainTextPreview(markdown: String, maxLength: Int = 200): String {
         val document: Node = parser.parse(markdown)
