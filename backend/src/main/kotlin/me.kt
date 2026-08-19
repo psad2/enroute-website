@@ -7,7 +7,8 @@ import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
 import kotlinx.serialization.Serializable
 
-// mirrors public_user() -- the full user row minus the password
+// This is the full user row, minus the password.
+// It matches the shape of public_user() in app.py.
 @Serializable
 data class MeResponse(
     val id: Long,
