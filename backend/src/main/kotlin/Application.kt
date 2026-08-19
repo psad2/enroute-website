@@ -8,6 +8,7 @@ import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.server.plugins.statuspages.StatusPages
 import io.ktor.server.response.respond
 import io.ktor.server.routing.routing
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonNamingStrategy
 
@@ -20,6 +21,7 @@ fun main() {
     ).start(wait = true)
 }
 
+@OptIn(ExperimentalSerializationApi::class)
 fun Application.module() {
     initDb()
 
