@@ -11,6 +11,7 @@ data class Category(
     val name: String
 )
 
+// This lists all forum categories, in alphabetical order.
 fun Route.categoriesRoute() {
     get("/api/categories") {
         db().use { connection ->
