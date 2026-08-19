@@ -41,8 +41,8 @@ fun ApplicationCall.paginateArgs(): Pagination {
 
     val perPage = rawPerPage
         ?.toIntOrNull()
-        ?.coerceIn(1)
-        ?: 1
+        ?.coerceIn(1, PER_PAGE_MAX)
+        ?: PER_PAGE_DEFAULT
 
     val offset = (page - 1) * perPage
 
@@ -60,27 +60,11 @@ data class Pagination(
 )
 
 @Serializable
-data class User(
-    val id: Long,
-    val username: String,
-    val email: String,
-    val passwords: String
-)
-
-@Serializable
 data class PublicUser(
     val id: Long,
     val username: String,
     val email: String
 )
-
-fun User.toPublicUser(): PublicUser {
-    return PublicUser(
-        id = id,
-        username = username,
-        email = email
-    )
-}
 
 @Serializable
 data class ErrorResponse(val error: String)
