@@ -25,4 +25,4 @@ dist-ssr
 
 how2run
 /forum-backend/.venv
-forum.db
+/forum-backend/forum.db
