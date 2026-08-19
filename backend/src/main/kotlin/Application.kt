@@ -13,9 +13,11 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonNamingStrategy
 
 fun main() {
+    val port = System.getenv("PORT")?.toIntOrNull() ?: 5000
+
     embeddedServer(
         Netty,
-        port = 5000,
+        port = port,
         host = "0.0.0.0",
         module = Application::module
     ).start(wait = true)
