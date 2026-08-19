@@ -38,6 +38,7 @@ data class SearchResponse(
     val posts: List<PostSearchResult>
 )
 
+// This searches threads and posts by a text query, and returns both lists.
 fun Route.searchRoute() {
     get("/api/search") {
         val q = (call.request.queryParameters["q"] ?: "").trim()
