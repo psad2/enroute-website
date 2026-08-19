@@ -72,13 +72,12 @@ fun initDb() {
             CREATE TABLE IF NOT EXISTS sessions (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 user_id INTEGER NOT NULL,
-                token TEXT UNQIUE NOT NULL,
-                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-                expires_at DATETIME NOT NULL,
+                token_hash TEXT UNQIUE NOT NULL UNIQUE,
+                expires_at TEXT NOT NULL,
                 
                 FOREIGN KEY(user_id)
                     REFERENCES user(id)
-                    ON DELETE CASCADE
+                    
             )
             """.trimIdent()
         )
