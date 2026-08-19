@@ -47,7 +47,6 @@ data class ThreadListItem(
 data class ThreadListResponse(
     val page: Int,
     val perPage: Int,
-    val limit: Int,
     val total: Int,
     val totalPages: Int,
     val threads: List<ThreadListItem>
@@ -82,7 +81,6 @@ data class ThreadResponse(
     val posts: List<SerializedPost>,
     val page: Int,
     val perPage: Int,
-    val limit: Int,
     val totalPosts: Int,
     val totalPages: Int
 )
@@ -241,7 +239,6 @@ fun Route.threadsRoute() {
                 ThreadListResponse(
                     page = pagination.page,
                     perPage = pagination.perPage,
-                    limit = pagination.perPage,
                     total = total,
                     totalPages = maxOf(1, ceil(total.toDouble() / pagination.perPage).toInt()),
                     threads = threads
@@ -594,7 +591,6 @@ fun Route.threadsRoute() {
                     posts = posts,
                     page = pagination.page,
                     perPage = pagination.perPage,
-                    limit = pagination.perPage,
                     totalPosts = totalPosts,
                     totalPages = maxOf(1, ceil(totalPosts.toDouble() / pagination.perPage).toInt())
                 )
