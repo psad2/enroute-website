@@ -2,9 +2,12 @@ import java.sql.Connection
 import java.sql.DriverManager
 import java.sql.ResultSet
 
+// DATABASE is a var, not a val. A test can change it to a temporary file
+// path, through the DATABASE_PATH environment variable. This gives each
+// test run its own isolated database, separate from the real forum.db file.
 var DATABASE = System.getenv("DATABASE_PATH") ?: "forum.db"
 
-// connect to db
+// This opens a new connection to the database file at DATABASE.
 fun db(): Connection {
     val connection = DriverManager.getConnection("jdbc:sqlite:$DATABASE")
 
@@ -17,7 +20,7 @@ fun db(): Connection {
     return connection
 }
 
-// create database & define values
+// This checks if a column exists in a table. It returns true or false.
 fun columnExists(connection: Connection, table: String, column: String): Boolean {
     connection.createStatement().use {
         stmt -> stmt.executeQuery("PRAGMA table_info($table)").use {
@@ -46,10 +49,13 @@ fun tableExists(connection: Connection, table: String): Boolean {
     }
 }
 
+// This sets up the database. It creates every table if it does not
+// already exist, then calls migrateSchema to update an older database
+// file. It runs at every startup, so it must be safe to run more than once.
 fun initDb() {
     val connection = db()
 
-    // table for userdata
+    // This creates the users table.
     connection.createStatement().use {
         stmt ->
         stmt.executeUpdate(
@@ -66,7 +72,7 @@ fun initDb() {
            """.trimIndent()
         )
 
-        // categories table
+        // This creates the categories table.
         stmt.executeUpdate(
             """
             CREATE TABLE IF NOT EXISTS categories (
@@ -76,7 +82,7 @@ fun initDb() {
             """.trimIndent()
         )
 
-        // sessions table
+        // This creates the sessions table.
         stmt.executeUpdate(
             """
             CREATE TABLE IF NOT EXISTS sessions (
@@ -92,7 +98,7 @@ fun initDb() {
             """.trimIndent()
         )
 
-        // thread table
+        // This creates the threads table.
         stmt.executeUpdate(
             """
             CREATE TABLE IF NOT EXISTS threads (
@@ -115,7 +121,7 @@ fun initDb() {
             """.trimIndent()
         )
 
-        // table for posts
+        // This creates the posts table.
         stmt.executeUpdate(
             """
             CREATE TABLE IF NOT EXISTS posts (
@@ -243,7 +249,11 @@ fun initDb() {
     connection.close()
 }
 
-// adds columns in case of existing db
+// This updates an older database file to the current schema. A forum.db
+// file from before a column existed will not have that column, since
+// CREATE TABLE IF NOT EXISTS does not alter a table that already exists.
+// This function adds each missing column, then fills in a safe default
+// value for any row where the new column is still empty.
 fun migrateSchema(connection: Connection) {
     data class ColumnMigration(val table: String, val column: String, val definition: String)
 
