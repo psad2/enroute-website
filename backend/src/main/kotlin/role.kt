@@ -26,6 +26,7 @@ fun hasRole(
     return allowedRoles.contains(userRole)
 }
 
+// An admin passes this check too. Admin includes every moderator right.
 fun isModerator(user: AuthenticatedUser): Boolean {
     return hasRole(
         user,
