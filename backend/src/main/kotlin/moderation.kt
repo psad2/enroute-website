@@ -48,6 +48,10 @@ fun Route.moderationRoute() {
                 return@delete
             }
 
+            // This is a soft removal. The post row stays in the thread.
+            // Only its content changes. The DELETE route in posts.kt removes
+            // a post's row entirely instead. A soft removal here means a
+            // reply or a quote that points at this post still resolves.
             connection.prepareStatement(
                 "UPDATE posts SET content = '[removed by moderation]' WHERE id = ?"
             ).use { stmt ->
