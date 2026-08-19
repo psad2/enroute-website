@@ -30,3 +30,5 @@ how2run
 
 /forum-backend/.venv/
 /forum-backend/forum.db
+
+/local-only/
