@@ -28,7 +28,7 @@ data class EditPostResponse(
 
 fun Route.postsRoute() {
 
-    // REPLY
+    // This adds a reply post to a thread.
     post("/api/threads/{threadId}/reply") {
         val threadId = call.parameters["threadId"]?.toLongOrNull()
 
@@ -240,7 +240,7 @@ fun Route.postsRoute() {
         }
     }
 
-    // EDIT POST
+    // This edits the content of a post.
     put("/api/posts/{postId}") {
         val postId = call.parameters["postId"]?.toLongOrNull()
 
@@ -335,7 +335,8 @@ fun Route.postsRoute() {
                 stmt.executeUpdate()
             }
 
-            // keep the thread's original content synchronized
+            // The thread's own content column is a copy of its first post.
+            // This keeps that copy in step with the edit above.
             val firstPostId = connection.prepareStatement(
                 "SELECT MIN(id) AS first_id FROM posts WHERE thread_id = ?"
             ).use { stmt ->
@@ -372,7 +373,7 @@ fun Route.postsRoute() {
         }
     }
 
-    // DELETE POST
+    // This deletes a post's row entirely.
     delete("/api/posts/{postId}") {
         val postId = call.parameters["postId"]?.toLongOrNull()
 
@@ -425,7 +426,9 @@ fun Route.postsRoute() {
                 return@delete
             }
 
-            // never allow deletion of the first post -- it represents the thread itself
+            // The first post in a thread holds the thread's own content.
+            // Deleting it must not be allowed, since the thread itself
+            // depends on it.
             val firstPostId = connection.prepareStatement(
                 "SELECT MIN(id) AS first_id FROM posts WHERE thread_id = ?"
             ).use { stmt ->
