@@ -36,7 +36,7 @@ data class ReportItem(
 
 fun Route.reportsRoute() {
 
-    // REPORT A SINGLE POST
+    // This reports one post for moderator review.
     post("/api/posts/{postId}/report") {
         val postId = call.parameters["postId"]?.toLongOrNull()
 
@@ -139,7 +139,7 @@ fun Route.reportsRoute() {
         }
     }
 
-    // GENERIC REPORT (post_id and/or thread_id)
+    // This reports a post, a thread, or both, for moderator review.
     post("/api/reports") {
         val token = call.bearerToken()
 
@@ -202,6 +202,10 @@ fun Route.reportsRoute() {
                 threadId = threadId ?: postThreadId
             }
 
+            // This copies threadId into a val. Kotlin cannot smart-cast a var
+            // once a closure below, db().use { }, could change it from another
+            // thread. The val below has a fixed value, so the null check on
+            // it holds for the rest of this block.
             val currentThreadId = threadId
 
             if (currentThreadId != null) {
@@ -241,7 +245,7 @@ fun Route.reportsRoute() {
         }
     }
 
-    // MODERATION - LIST OPEN REPORTS
+    // This lists every open report, for a moderator to review.
     get("/api/reports") {
         val token = call.bearerToken()
 
@@ -319,7 +323,7 @@ fun Route.reportsRoute() {
         }
     }
 
-    // MODERATION - RESOLVE REPORT
+    // This marks an open report as resolved.
     put("/api/reports/{reportId}") {
         val reportId = call.parameters["reportId"]?.toLongOrNull()
 
