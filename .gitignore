@@ -23,6 +23,10 @@ dist-ssr
 *.sln
 *.sw?
 
+
+#secrets
 how2run
-/forum-backend/.venv
+
+
+/forum-backend/.venv/
 /forum-backend/forum.db
