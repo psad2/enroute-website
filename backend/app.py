@@ -38,7 +38,7 @@ limiter = Limiter(
         "RATELIMIT_STORAGE_URI = redis://127.0.0.1:6379/0",
         "memory://",
     ),
-    strategy = "fixed+window",
+    strategy = "fixed-window",
     default_limits = [],
 )
 

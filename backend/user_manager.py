@@ -531,7 +531,7 @@ if __name__ == "__main__":
             "Database Not Found",
             f"Could not find:\n\n{DATABASE}\n\n"
             "Make sure user_manager.py is inside "
-            "your forum-backend folder."
+            "your backend folder."
         )
 
         root.destroy()
