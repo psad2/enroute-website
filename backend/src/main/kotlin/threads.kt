@@ -101,7 +101,7 @@ data class LockResponse(val locked: Boolean)
 
 fun Route.threadsRoute() {
 
-    // LIST THREADS
+    // This lists threads, with an optional category filter and search term.
     get("/api/threads") {
         val pagination = call.paginateArgs()
 
@@ -247,7 +247,7 @@ fun Route.threadsRoute() {
         }
     }
 
-    // CREATE THREAD
+    // This creates a new thread.
     post("/api/threads") {
         val token = call.bearerToken()
 
@@ -335,7 +335,9 @@ fun Route.threadsRoute() {
                 }
             }
 
-            // the first post is the actual thread content
+            // A thread's content is also stored as its own first post.
+            // This lets a thread's opening message work the same way as any
+            // other post, for example when a user replies to it or quotes it.
             connection.prepareStatement(
                 """
                 INSERT INTO posts (
@@ -364,7 +366,7 @@ fun Route.threadsRoute() {
         }
     }
 
-    // GET THREAD
+    // This returns one thread, with its posts.
     get("/api/threads/{threadId}") {
         val threadId = call.parameters["threadId"]?.toLongOrNull()
 
@@ -598,7 +600,7 @@ fun Route.threadsRoute() {
         }
     }
 
-    // EDIT THREAD
+    // This edits a thread's title and content.
     put("/api/threads/{threadId}") {
         val threadId = call.parameters["threadId"]?.toLongOrNull()
 
@@ -743,7 +745,7 @@ fun Route.threadsRoute() {
         }
     }
 
-    // DELETE THREAD
+    // This deletes a thread and everything under it.
     delete("/api/threads/{threadId}") {
         val threadId = call.parameters["threadId"]?.toLongOrNull()
 
@@ -787,6 +789,11 @@ fun Route.threadsRoute() {
                 return@delete
             }
 
+            // The four deletes below are explicit. db-handler.kt already sets
+            // ON DELETE CASCADE on every one of these foreign keys, so a
+            // plain "DELETE FROM threads" would remove these rows on its
+            // own. This block does the same cleanup by hand, so it is a
+            // true duplicate of what SQLite would already do.
             connection.prepareStatement(
                 """
                 DELETE FROM reactions
@@ -831,7 +838,7 @@ fun Route.threadsRoute() {
         }
     }
 
-    // PIN THREAD
+    // This toggles whether a thread is pinned. A moderator right is required.
     post("/api/threads/{threadId}/pin") {
         val threadId = call.parameters["threadId"]?.toLongOrNull()
 
@@ -889,7 +896,7 @@ fun Route.threadsRoute() {
         }
     }
 
-    // LOCK THREAD
+    // This toggles whether a thread is locked. A moderator right is required.
     post("/api/threads/{threadId}/lock") {
         val threadId = call.parameters["threadId"]?.toLongOrNull()
 
