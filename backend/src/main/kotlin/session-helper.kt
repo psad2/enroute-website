@@ -39,11 +39,17 @@ fun cleanupExpiredSessions(
     }
 }
 
+// This creates a new session for a user and returns the raw token.
+// The token itself goes to the client. The database keeps only its hash
+// (see hashToken below), so a stolen database dump does not give an
+// attacker a usable session.
 fun createSession(
     connection: Connection,
     userId: Long
 ): String {
 
+    // SecureRandom, not a normal random generator, since this token
+    // must not be guessable.
     val tokenBytes = ByteArray(48)
 
     secureRandom.nextBytes(tokenBytes)
@@ -187,6 +193,9 @@ fun deleteAllUserSessions(
     }
 }
 
+// This hashes a raw session token with SHA-256, for storage and lookup.
+// The database never holds a raw token, only this hash. This is why a
+// stolen sessions table row cannot be used to log in as the user.
 private fun hashToken(
     token: String
 ): String {
@@ -201,11 +210,16 @@ private fun hashToken(
         }
 }
 
+// 210,000 is the current OWASP-recommended minimum iteration count for
+// PBKDF2-SHA256. A higher count makes each password guess slower to check.
 private const val PBKDF2_ITERATIONS = 210_000
 private const val PBKDF2_KEY_LENGTH_BITS = 256
 private const val PBKDF2_ALGORITHM = "PBKDF2WithHmacSHA256"
 
-// stored as pbkdf2_sha256$<iterations>$<base64 salt>$<base64 hash>
+// This hashes a password for storage. The stored string has the form
+// pbkdf2_sha256$<iterations>$<base64 salt>$<base64 hash>.
+// It carries its own salt and iteration count, so verifyPassword can
+// check a password without any other stored state.
 fun hashPassword(password: String): String {
     val salt = ByteArray(16)
     secureRandom.nextBytes(salt)
@@ -233,6 +247,10 @@ fun verifyPassword(password: String, stored: String): Boolean {
 
     val actualHash = pbkdf2(password, salt, iterations)
 
+    // MessageDigest.isEqual runs in constant time. It does not stop at the
+    // first different byte. A plain == comparison does stop early, and an
+    // attacker could use that timing difference to guess the hash one
+    // byte at a time. This is why isEqual is used here, not ==.
     return MessageDigest.isEqual(actualHash, expectedHash)
 }
 
