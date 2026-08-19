@@ -1117,9 +1117,12 @@
               padding: 0 18px;
           }
 
-          nav,
-          .header-user {
+          nav {
               display: none;
+          }
+
+          .nav-toggle {
+              display: flex;
           }
 
           main {
@@ -1170,7 +1173,7 @@
     <span class="brand-word">EN ROUTE</span>
   </a>
 
-  <nav class="tabs">
+  <nav class="tabs" id="site-nav">
     <a href="/fleet.html">Fleet</a>
     <a href="/crew.html">Crew</a>
     <a href="#about">About</a>
@@ -1184,6 +1187,10 @@
       Pilot Login
     </button>
   </div>
+
+  <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Toggle navigation">
+    <span></span><span></span><span></span>
+  </button>
 </header>
 
 <main>
@@ -4016,6 +4023,8 @@
   loadThread();
 
 </script>
+
+<script src="public/nav.js" defer></script>
 
 </body>
 </html>

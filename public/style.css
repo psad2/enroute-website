@@ -97,3 +97,37 @@ footer{ background:var(--ink); border-top:1px solid var(--line); padding:80px 40
   display:flex; justify-content:space-between; flex-wrap:wrap; gap:12px;
   font-family:var(--mono); font-size:11.5px; color:var(--text-muted); letter-spacing:.03em;
 }
+
+/* ---------- nav-toggle (mobile hamburger button) ----------
+   Hidden by default; each page's own media query (where it already hides
+   nav.tabs) flips this to display:flex at that page's own breakpoint. */
+.nav-toggle{
+  display:none;
+  flex-direction:column; justify-content:center; align-items:stretch; gap:5px;
+  width:34px; height:34px; padding:0; border:0; background:none; cursor:pointer;
+}
+.nav-toggle span{
+  display:block; width:100%; height:2px; background:var(--text);
+  transition:transform .25s ease, opacity .25s ease;
+}
+.nav-toggle[aria-expanded="true"] span:nth-child(1){ transform:translateY(7px) rotate(45deg); }
+.nav-toggle[aria-expanded="true"] span:nth-child(2){ opacity:0; }
+.nav-toggle[aria-expanded="true"] span:nth-child(3){ transform:translateY(-7px) rotate(-45deg); }
+
+/* ---------- mobile nav panel (opened by public/nav.js) ---------- */
+nav.tabs.is-open{
+  display:flex;
+  flex-direction:column; gap:0;
+  position:fixed; top:64px; left:0; right:0; bottom:0;
+  padding:12px 20px 40px;
+  background:var(--navy-deep);
+  border-top:1px solid var(--line);
+  overflow-y:auto;
+  z-index:499;
+}
+nav.tabs.is-open a{
+  padding:16px 4px;
+  border-bottom:1px solid var(--line);
+  font-size:14px;
+}
+body.nav-locked{ overflow:hidden; }

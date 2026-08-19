@@ -73,7 +73,7 @@
         nav.tabs a.current::after{ width:100%; background:var(--accent); }
         nav.tabs a:hover{ color:var(--text); }
         nav.tabs a:hover::after{ width:100%; }
-        @media (max-width:900px){ header{ padding:18px 20px; } nav.tabs{ display:none; } }
+        @media (max-width:900px){ header{ padding:18px 20px; } nav.tabs{ display:none; } .nav-toggle{ display:flex; } }
 
         /* ---------- intro ---------- */
         #intro{
@@ -186,7 +186,7 @@
         </span>
 
     </a>
-    <nav class="tabs">
+    <nav class="tabs" id="site-nav">
         <a href="/fleet.html">Fleet</a>
         <a href="/crew.html">Crew</a>
         <a href="#about">About</a>
@@ -195,6 +195,9 @@
         <a href="/forums.html">Forum</a>
     </nav>
     <a href="#" class="link-cta primary">Book a Flight <span class="arrow">→</span></a>
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Toggle navigation">
+        <span></span><span></span><span></span>
+    </button>
 </header>
 
 <section id="intro" data-waypoint="DEP">
@@ -357,6 +360,8 @@
 
     onScroll();
 </script>
+
+<script src="public/nav.js" defer></script>
 
 </body>
 </html>

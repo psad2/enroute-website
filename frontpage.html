@@ -142,11 +142,11 @@
     }
     nav.tabs a:hover{ color:var(--text); }
     nav.tabs a:hover::after{ width:100%; }
-    .nav-toggle{ display:none; }
 
     @media (max-width:900px){
       header{ padding:18px 20px; }
       nav.tabs{ display:none; }
+      .nav-toggle{ display:flex; }
     }
 
     /* ---------- hero ---------- */
@@ -353,7 +353,7 @@
     <span class="brand-word">EN ROUTE</span>
   </a>
 
-  <nav class="tabs">
+  <nav class="tabs" id="site-nav">
     <a href="/fleet.html">Fleet</a>
     <a href="/crew.html">Crew</a>
     <a href="#about">About</a>
@@ -365,6 +365,10 @@
   <a href="/" class="link-cta primary">
     Home <span class="arrow">→</span>
   </a>
+
+  <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Toggle navigation">
+    <span></span><span></span><span></span>
+  </button>
 </header>
 
 <section id="hero" data-waypoint="DEP">
@@ -790,6 +794,8 @@
 
   loadCrew();
 </script>
+
+<script src="public/nav.js" defer></script>
 
 </body>
 </html>
