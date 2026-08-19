@@ -130,8 +130,6 @@ Administrators can:
 
 * [ ] Fix all critical issues
 * [ ] Fix all high-priority issues
-* [ ] Improve backend stability
-* [ ] Fix existing broken functions
 * [ ] Improve error handling
 
 ## Priority 2 — Kotlin Backend Rewrite
