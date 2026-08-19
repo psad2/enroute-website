@@ -14,30 +14,9 @@
     rel="stylesheet"
   >
 
+  <link rel="stylesheet" href="public/style.css">
+
   <style>
-      :root {
-          --ink: #0A0D12;
-          --navy-deep: #0E1B2C;
-          --navy-mid: #132840;
-
-          --amber: #6FA8DC;
-          --amber-hover: #91BCE4;
-
-          --text: #ECEFF3;
-          --text-muted: #8FA0B5;
-
-          --line: rgba(255,255,255,.10);
-
-          --green: #65C79A;
-          --red: #D87878;
-          --orange: #D9A15E;
-          --purple: #B58CFF;
-
-          --display: 'Space Grotesk', sans-serif;
-          --body: 'Inter', sans-serif;
-          --mono: 'IBM Plex Mono', monospace;
-      }
-
       * {
           box-sizing: border-box;
       }
@@ -110,9 +89,9 @@
       .brand-badge {
           padding: 4px 7px;
 
-          border: 1px solid var(--amber);
+          border: 1px solid var(--accent);
 
-          color: var(--amber);
+          color: var(--accent);
 
           font-family: var(--mono);
           font-size: 12px;
@@ -146,10 +125,10 @@
       }
 
       .header-user button {
-          border: 1px solid var(--amber);
+          border: 1px solid var(--accent);
 
           background: transparent;
-          color: var(--amber);
+          color: var(--accent);
 
           padding: 9px 15px;
 
@@ -161,7 +140,7 @@
       }
 
       .header-user button:hover {
-          background: var(--amber);
+          background: var(--accent);
           color: var(--ink);
       }
 
@@ -199,7 +178,7 @@
       }
 
       .breadcrumb a {
-          color: var(--amber);
+          color: var(--accent);
       }
 
       /* =====================================================
@@ -227,15 +206,15 @@
       }
 
       .search-box input:focus {
-          border-color: var(--amber);
+          border-color: var(--accent);
       }
 
       .search-box button {
           padding: 10px 16px;
 
-          border: 1px solid var(--amber);
+          border: 1px solid var(--accent);
 
-          background: var(--amber);
+          background: var(--accent);
           color: var(--ink);
 
           font-family: var(--mono);
@@ -253,7 +232,7 @@
       .thread-category {
           margin-bottom: 10px;
 
-          color: var(--amber);
+          color: var(--accent);
 
           font-family: var(--mono);
           font-size: 10px;
@@ -309,8 +288,8 @@
       }
 
       .control-button:hover {
-          border-color: var(--amber);
-          color: var(--amber);
+          border-color: var(--accent);
+          color: var(--accent);
       }
 
       .control-button.danger:hover {
@@ -447,9 +426,9 @@
 
           background: var(--navy-mid);
 
-          border: 1px solid var(--amber);
+          border: 1px solid var(--accent);
 
-          color: var(--amber);
+          color: var(--accent);
 
           font-family: var(--mono);
           font-size: 12px;
@@ -457,7 +436,7 @@
       }
 
       .avatar:hover {
-          background: var(--amber);
+          background: var(--accent);
           color: var(--ink);
       }
 
@@ -468,7 +447,7 @@
       }
 
       .post-username:hover {
-          color: var(--amber);
+          color: var(--accent);
       }
 
       .post-stats {
@@ -500,7 +479,7 @@
       }
 
       .post-number {
-          color: var(--amber);
+          color: var(--accent);
       }
 
       .post-message {
@@ -536,7 +515,7 @@
           margin: 0 0 15px;
           padding: 12px 15px;
 
-          border-left: 3px solid var(--amber);
+          border-left: 3px solid var(--accent);
 
           background: rgba(111,168,220,.05);
 
@@ -546,7 +525,7 @@
       .quote-author {
           margin-bottom: 6px;
 
-          color: var(--amber);
+          color: var(--accent);
 
           font-family: var(--mono);
           font-size: 9px;
@@ -640,8 +619,8 @@
 
       .reaction:hover,
       .reaction.active {
-          border-color: var(--amber);
-          color: var(--amber);
+          border-color: var(--accent);
+          color: var(--accent);
       }
 
       .reaction.active {
@@ -659,7 +638,7 @@
       .reply-title {
           margin-bottom: 12px;
 
-          color: var(--amber);
+          color: var(--accent);
 
           font-family: var(--mono);
           font-size: 10px;
@@ -683,7 +662,7 @@
 
           padding: 10px 12px;
 
-          border-left: 2px solid var(--amber);
+          border-left: 2px solid var(--accent);
 
           background: rgba(111,168,220,.05);
 
@@ -715,10 +694,10 @@
 
           padding: 10px 16px;
 
-          border: 1px solid var(--amber);
+          border: 1px solid var(--accent);
 
           background: transparent;
-          color: var(--amber);
+          color: var(--accent);
 
           font-family: var(--mono);
           font-size: 10px;
@@ -746,29 +725,13 @@
       }
 
       textarea:focus {
-          border-color: var(--amber);
+          border-color: var(--accent);
       }
 
-      .reply-submit {
+      #replyForm .btn-submit {
+          width: auto;
           margin-top: 12px;
-
           padding: 11px 18px;
-
-          border: 1px solid var(--amber);
-
-          background: var(--amber);
-          color: var(--ink);
-
-          font-family: var(--mono);
-          font-size: 10px;
-          font-weight: 600;
-
-          letter-spacing: .08em;
-          text-transform: uppercase;
-      }
-
-      .reply-submit:hover {
-          background: var(--amber-hover);
       }
 
       /* =====================================================
@@ -799,8 +762,8 @@
 
       .page-button:hover,
       .page-button.active {
-          border-color: var(--amber);
-          color: var(--amber);
+          border-color: var(--accent);
+          color: var(--accent);
       }
 
       /* =====================================================
@@ -987,7 +950,7 @@
 
       .dialog-accent {
           height: 2px;
-          background: var(--amber);
+          background: var(--accent);
       }
 
       .dialog-header {
@@ -999,7 +962,7 @@
       }
 
       .dialog-eyebrow {
-          color: var(--amber);
+          color: var(--accent);
 
           font-family: var(--mono);
           font-size: 8px;
@@ -1063,7 +1026,7 @@
       }
 
       .dialog-input:focus {
-          border-color: var(--amber);
+          border-color: var(--accent);
       }
 
       .dialog-actions {
@@ -1100,14 +1063,14 @@
       }
 
       .dialog-button.primary {
-          border-color: var(--amber);
+          border-color: var(--accent);
 
-          background: var(--amber);
+          background: var(--accent);
           color: var(--ink);
       }
 
       .dialog-button.primary:hover {
-          background: var(--amber-hover);
+          background: var(--accent-hover);
       }
 
       .dialog-button.danger {
@@ -1302,7 +1265,7 @@
 
           <button
             type="submit"
-            class="reply-submit"
+            class="btn-submit"
             id="replySubmit"
           >
             Post Reply →

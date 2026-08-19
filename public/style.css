@@ -1,187 +1,99 @@
-@font-face {
-    font-family: "JetBrains Sans";
-    src: url("fonts/JetBrainsSans-Regular.woff2");
+/* ==========================================================
+   En Route shared design system
+   Single source of truth for: color tokens, the link-cta
+   nav/CTA link component, the btn-submit form button
+   component, and the shared site footer. Linked from every
+   page's <head>; each page's own <style> block keeps only
+   what's genuinely page-specific.
+   ========================================================== */
+
+:root{
+  --ink:#0A0D12;
+  --navy-deep:#0E1B2C;
+  --navy-mid:#132840;
+  --navy-glow: rgba(87,214,222,0.10);
+
+  --paper:#FFFFFF;
+  --paper-ink:#0E2A4D;
+  --paper-muted:#5C7292;
+
+  --accent:#6FA8DC;
+  --accent-hover:#91BCE4;
+  --accent-soft: rgba(111,168,220,0.15);
+
+  --cyan:#C7DEF5;
+  --cyan-soft: rgba(199,222,245,0.15);
+
+  --text:#ECEFF3;
+  --text-muted:#8FA0B5;
+
+  --line: rgba(255,255,255,0.12);
+
+  --green:#65C79A;
+  --red:#D87878;
+  --orange:#D9A15E;
+  --purple:#B58CFF;
+
+  --display: 'Space Grotesk', sans-serif;
+  --body: 'Inter', sans-serif;
+  --mono: 'IBM Plex Mono', monospace;
 }
 
-@font-face {
-    font-family: "JetBrains Mono";
-    src: url("fonts/JetBrainsMono-Regular.woff2");
+/* ---------- link-cta (underlined text CTA, used on <a> nav/content links) ---------- */
+.link-cta{
+  font-family:var(--mono); font-size:13px; letter-spacing:.08em; text-transform:uppercase;
+  display:inline-flex; align-items:center; gap:9px;
+  color:var(--text); position:relative; padding-bottom:6px;
 }
-
-:root {
-    font-family: "JetBrains Sans", Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-    font-weight: 300;
-    color: rgba(255, 255, 255, 0.87);
-    background-color: #000000;
-    text-align: center;
+.link-cta::after{
+  content:""; position:absolute; left:0; bottom:0; height:1px; width:100%;
+  background:currentColor; transform:scaleX(0.3); transform-origin:left;
+  transition:transform .35s cubic-bezier(.16,.8,.24,1);
 }
+.link-cta:hover::after{ transform:scaleX(1); }
+.link-cta .arrow{ transition:transform .3s ease; }
+.link-cta:hover .arrow{ transform:translateX(4px); }
+.link-cta.primary{ color:var(--accent); }
 
-body {
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    min-width: 320px;
-    min-height: 100vh;
-    align-items: center;
-
-    background-image: url("background.svg");
-    background-repeat: no-repeat;
-    background-size: contain;
+/* ---------- btn-submit (filled form submit button) ---------- */
+.btn-submit{
+  width:100%;
+  padding:12px;
+  border:1px solid var(--accent);
+  background:var(--accent);
+  color:var(--ink);
+  font-family:var(--mono);
+  font-size:10px;
+  font-weight:600;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  cursor:pointer;
+  transition:background .2s ease, opacity .2s ease;
 }
+.btn-submit:hover{ background:var(--accent-hover); }
+.btn-submit:disabled{ opacity:.5; cursor:wait; }
 
-h1 {
-    font-size: 29px;
-    line-height: 39px;
-    font-weight: 300;
+/* ---------- shared footer ---------- */
+footer{ background:var(--ink); border-top:1px solid var(--line); padding:80px 40px 34px; }
+.footer-grid{
+  display:grid; grid-template-columns:1.4fr 1fr 1fr 1.2fr; gap:50px; max-width:1180px; margin:0 auto 60px;
 }
-
-.title {
-    margin-bottom: 40px;
+@media (max-width:820px){ .footer-grid{ grid-template-columns:1fr 1fr; } }
+@media (max-width:520px){ .footer-grid{ grid-template-columns:1fr; } }
+.footer-brand .brand-word{ font-size:20px; }
+.footer-brand p{ color:var(--text-muted); font-size:13.5px; margin:16px 0 0; max-width:260px; }
+.footer-col h4{
+  font-family:var(--mono); font-size:11px; letter-spacing:.12em; text-transform:uppercase;
+  color:var(--text-muted); margin:0 0 18px; font-weight:500;
 }
-
-#app {
-    max-width: 1280px;
+.footer-col a{
+  display:block; font-size:14px; color:var(--text); margin-bottom:12px;
+  transition:color .2s ease;
 }
-
-.logo {
-    margin-top: 45px;
-    margin-left: 20%;
-    align-self: flex-start;
-}
-
-img {
-    max-width: 100%;
-    height: auto;
-}
-
-.counter {
-    font-family: "JetBrains Mono", Inter, system-ui, sans-serif;
-    font-weight: 400;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    padding: 60px;
-    color: rgba(255, 255, 255, 1);
-}
-
-.counter-interaction {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: 20px 0;
-    width: 470px;
-    justify-content: space-between;
-}
-
-.counter-interaction button {
-    width: 48%;
-    height: 47%;
-    align-content: space-between;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    border-radius: 120px;
-    font-size: 68px;
-    text-align: center;
-}
-
-.counter-interaction button:nth-child(2n+1) {
-    margin-right: 14px;
-}
-
-.counter-interaction button:disabled {
-    color: rgba(255, 255, 255, 0.5);
-    background-image: none;
-    border-color: inherit;
-}
-
-.counter-info {
-    width: 360px;
-    height: 345px;
-    margin-right: 27px;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    background-color: rgba(25, 25, 28, 0.5);
-    border-radius: 29px;
-}
-
-.counter-text {
-    text-transform: uppercase;
-    font-weight: 500;
-    font-size: 24px;
-    margin-top: 60px;
-    margin-bottom: 28px;
-
-}
-
-.counter-value {
-    font-weight: 200;
-    font-size: 170px;
-    margin: 0;
-    padding: 0;
-    line-height: 1;
-}
-
-button {
-    font-family: "JetBrains Mono", Inter, system-ui, sans-serif;
-    background-color: rgba(25, 25, 28, 0.5);
-    cursor: pointer;
-    color: rgba(255, 255, 255, 1);
-}
-
-button:hover {
-    background-image: radial-gradient(
-            farthest-corner at 77% 83%,
-            rgba(1, 197, 245, 0.5) 2%,
-            rgba(1, 126, 254, 0.5) 28%,
-            rgba(25, 25, 28, 0) 70%
-    );
-    border: 1px solid rgba(76, 166, 255, 0.2);
-    background-clip: padding-box;
-}
-
-.technologies {
-    margin-bottom: 36px;
-    align-self: center;
-}
-
-.technologies img {
-    max-width: fit-content;
-}
-
-
-@media (max-width: 875px) {
-
-    .logo {
-        margin-top: 10px;
-    }
-
-    .title {
-        margin-bottom: 30px;
-    }
-
-    .counter {
-        flex-direction: column;
-        padding: 0;
-        margin-bottom: 0;
-    }
-
-    .counter-info {
-        width: 100%;
-        height: 300px;
-        margin-right: 0;
-        margin-bottom: 15px;
-    }
-
-    .counter-interaction {
-        display: flex;
-        flex-direction: row;
-        height: auto;
-        width: auto;
-    }
-
-    .counter-interaction button {
-        width: 47%;
-        height: 100px;
-        margin-right: 0;
-        margin-bottom: 15px;
-    }
+.footer-col a:hover{ color:var(--accent); }
+.footer-col .muted{ color:var(--text-muted); font-size:13px; }
+.footer-bottom{
+  max-width:1180px; margin:0 auto; padding-top:26px; border-top:1px solid var(--line);
+  display:flex; justify-content:space-between; flex-wrap:wrap; gap:12px;
+  font-family:var(--mono); font-size:11.5px; color:var(--text-muted); letter-spacing:.03em;
 }

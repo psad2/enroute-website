@@ -15,28 +15,9 @@
     rel="stylesheet"
   >
 
+  <link rel="stylesheet" href="public/style.css">
+
   <style>
-      :root {
-          --ink: #0A0D12;
-          --navy-deep: #0E1B2C;
-          --navy-mid: #132840;
-
-          --amber: #6FA8DC;
-          --amber-hover: #91BCE4;
-
-          --text: #ECEFF3;
-          --text-muted: #8FA0B5;
-
-          --line: rgba(255, 255, 255, 0.10);
-
-          --red: #D87878;
-          --green: #65C79A;
-
-          --display: 'Space Grotesk', sans-serif;
-          --body: 'Inter', sans-serif;
-          --mono: 'IBM Plex Mono', monospace;
-      }
-
       * {
           box-sizing: border-box;
       }
@@ -150,9 +131,9 @@
       .badge {
           padding: 4px 7px;
 
-          border: 1px solid var(--amber);
+          border: 1px solid var(--accent);
 
-          color: var(--amber);
+          color: var(--accent);
 
           font-family: var(--mono);
           font-size: 12px;
@@ -171,7 +152,7 @@
       .eyebrow {
           margin-bottom: 10px;
 
-          color: var(--amber);
+          color: var(--accent);
 
           font-family: var(--mono);
           font-size: 10px;
@@ -243,7 +224,7 @@
       }
 
       .field input:focus {
-          border-color: var(--amber);
+          border-color: var(--accent);
       }
 
       /* =====================================================
@@ -255,7 +236,7 @@
 
           padding: 13px;
 
-          border-left: 2px solid var(--amber);
+          border-left: 2px solid var(--accent);
 
           background: rgba(111, 168, 220, 0.06);
 
@@ -290,7 +271,7 @@
       }
 
       .post-role.role-moderator {
-          color: var(--amber);
+          color: var(--accent);
           font-weight: 700;
       }
 
@@ -363,34 +344,6 @@
          SUBMIT BUTTON
          ===================================================== */
 
-      .submit {
-          width: 100%;
-
-          padding: 13px;
-
-          border: 1px solid var(--amber);
-
-          background: var(--amber);
-          color: var(--ink);
-
-          font-family: var(--mono);
-          font-size: 10px;
-          font-weight: 600;
-
-          letter-spacing: 0.08em;
-          text-transform: uppercase;
-
-          transition: background 0.2s ease, opacity 0.2s ease;
-      }
-
-      .submit:hover {
-          background: var(--amber-hover);
-      }
-
-      .submit:disabled {
-          opacity: 0.5;
-          cursor: wait;
-      }
 
       /* =====================================================
          FOOTER LINKS
@@ -407,7 +360,7 @@
       }
 
       .login a {
-          color: var(--amber);
+          color: var(--accent);
       }
 
       .login a:hover {
@@ -515,7 +468,7 @@
       .discord-label {
           margin-bottom: 8px;
 
-          color: var(--amber);
+          color: var(--accent);
 
           font-family: var(--mono);
           font-size: 9px;
@@ -549,9 +502,9 @@
 
           padding: 12px 18px;
 
-          border: 1px solid var(--amber);
+          border: 1px solid var(--accent);
 
-          background: var(--amber);
+          background: var(--accent);
           color: var(--ink);
 
           font-family: var(--mono);
@@ -567,7 +520,7 @@
       }
 
       .discord-button:hover {
-          background: var(--amber-hover);
+          background: var(--accent-hover);
       }
 
       .continue-button {
@@ -795,7 +748,7 @@
 
     <button
       type="submit"
-      class="submit"
+      class="btn-submit"
       id="submitButton"
     >
       Create Pilot Account →
