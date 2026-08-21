@@ -20,4 +20,15 @@ class HealthRouteTest {
         assertEquals("ok", response.body<HealthOkResponse>().status)
         assertEquals("ok", response.body<HealthOkResponse>().database)
     }
+
+    @Test
+    fun `an unmatched api path returns a JSON 404`() = testApplication {
+        application { module() }
+        val client = createClient { install(ContentNegotiation) { json() } }
+
+        val response = client.get("/api/this-route-does-not-exist")
+
+        assertEquals(HttpStatusCode.NotFound, response.status)
+        assertEquals("Endpoint not found", response.body<ErrorResponse>().error)
+    }
 }
