@@ -261,6 +261,8 @@ fun migrateSchema(connection: Connection) {
         ColumnMigration("users", "bio", "TEXT DEFAULT ''"),
         ColumnMigration("users", "role", "TEXT DEFAULT 'user'"),
         ColumnMigration("users", "joined_at", "DATETIME"),
+        ColumnMigration("users", "banned", "INTEGER DEFAULT 0"),
+        ColumnMigration("users", "timeout_until", "TEXT"),
 
         ColumnMigration("threads", "pinned", "INTEGER DEFAULT 0"),
         ColumnMigration("threads", "locked", "INTEGER DEFAULT 0"),
@@ -288,6 +290,14 @@ fun migrateSchema(connection: Connection) {
             UPDATE users
             SET role = 'user'
             WHERE role IS NULL OR role = ''
+            """.trimIndent()
+        )
+
+        stmt.executeUpdate(
+            """
+            UPDATE users
+            SET banned = 0
+            WHERE banned IS NULL
             """.trimIndent()
         )
 
