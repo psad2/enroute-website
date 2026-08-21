@@ -23,7 +23,7 @@ private val ALLOWED_PAGES = setOf(
     "frontpage.html",
     "fleet.html",
     "crew.html",
-    "carrers.html",
+    "careers.html",
     "register.html",
     "forums.html",
     "thread.html",

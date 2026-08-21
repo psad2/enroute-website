@@ -231,7 +231,7 @@ fun initDb() {
         "Hardware",
         "Software",
         "Helpdesk",
-        "Offical Announcements",
+        "Official Announcements",
         "Screenshots & Media",
         "Offtopic",
     )
