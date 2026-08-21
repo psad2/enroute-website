@@ -17,6 +17,7 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
 
 @OptIn(ExperimentalSerializationApi::class)
 class AuthRouteTest {
@@ -163,5 +164,75 @@ class AuthRouteTest {
         }
 
         assertEquals(HttpStatusCode.OK, response.status)
+    }
+
+    // This hash is a real werkzeug generate_password_hash("correcthorse")
+    // output (scrypt, werkzeug's current default), generated once against
+    // the project's own venv to confirm the exact format rather than
+    // guessing it. It stands in for an account created by app.py before
+    // this backend existed.
+    private val legacyWerkzeugHash =
+        "scrypt:32768:8:1\$MigGT94Sy5PFGPc2\$0fcbdf1bf6cac5f1b0420794f2901a87591c4ad55929fc555f6af22a8d16fecb876b9a9e8840c4f1244136f580707683995f3c3788849502f3337f8cb15d1914"
+
+    private fun insertLegacyUser(username: String, email: String, passwordHash: String) {
+        db().use { connection ->
+            connection.prepareStatement(
+                "INSERT INTO users (username, email, password, bio, role) VALUES (?, ?, ?, '', 'user')"
+            ).use { stmt ->
+                stmt.setString(1, username)
+                stmt.setString(2, email)
+                stmt.setString(3, passwordHash)
+                stmt.executeUpdate()
+            }
+        }
+    }
+
+    private fun storedPasswordFor(username: String): String {
+        db().use { connection ->
+            connection.prepareStatement(
+                "SELECT password FROM users WHERE username = ?"
+            ).use { stmt ->
+                stmt.setString(1, username)
+                stmt.executeQuery().use { rs ->
+                    rs.next()
+                    return rs.getString("password")
+                }
+            }
+        }
+    }
+
+    @Test
+    fun `login with a legacy werkzeug hash succeeds and migrates the stored hash`() = testApplication {
+        application { module() }
+        startApplication()
+        val client = createClient { install(ContentNegotiation) { json(testJson()) } }
+
+        insertLegacyUser("legacyuser", "legacy@example.com", legacyWerkzeugHash)
+
+        val response = client.post("/api/login") {
+            contentType(ContentType.Application.Json)
+            setBody("""{"username":"legacyuser","password":"correcthorse"}""")
+        }
+
+        assertEquals(HttpStatusCode.OK, response.status)
+        assertNotNull(response.body<LoginResponse>().token)
+        assertTrue(storedPasswordFor("legacyuser").startsWith("pbkdf2_sha256$"))
+    }
+
+    @Test
+    fun `wrong password against a legacy hash is rejected and does not migrate it`() = testApplication {
+        application { module() }
+        startApplication()
+        val client = createClient { install(ContentNegotiation) { json(testJson()) } }
+
+        insertLegacyUser("legacyuser2", "legacy2@example.com", legacyWerkzeugHash)
+
+        val response = client.post("/api/login") {
+            contentType(ContentType.Application.Json)
+            setBody("""{"username":"legacyuser2","password":"wrongpassword"}""")
+        }
+
+        assertEquals(HttpStatusCode.Unauthorized, response.status)
+        assertEquals(legacyWerkzeugHash, storedPasswordFor("legacyuser2"))
     }
 }

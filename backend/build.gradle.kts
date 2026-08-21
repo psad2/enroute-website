@@ -23,6 +23,7 @@ dependencies {
     implementation("org.xerial:sqlite-jdbc:3.45.1.0")
     implementation("org.commonmark:commonmark:0.21.0")
     implementation("org.jsoup:jsoup:1.17.2")
+    implementation("org.bouncycastle:bcprov-jdk18on:1.85.2")
 
     testImplementation(kotlin("test-junit5"))
     testImplementation("io.ktor:ktor-server-test-host:$ktorVersion")

@@ -1,5 +1,7 @@
 package com.enroute.auth
 
+import org.bouncycastle.crypto.generators.SCrypt
+
 import java.security.MessageDigest
 import java.security.SecureRandom
 import java.sql.Connection
@@ -254,9 +256,129 @@ fun verifyPassword(password: String, stored: String): Boolean {
     return MessageDigest.isEqual(actualHash, expectedHash)
 }
 
-private fun pbkdf2(password: String, salt: ByteArray, iterations: Int): ByteArray {
-    val spec = PBEKeySpec(password.toCharArray(), salt, iterations, PBKDF2_KEY_LENGTH_BITS)
-    val factory = SecretKeyFactory.getInstance(PBKDF2_ALGORITHM)
+private fun pbkdf2(
+    password: String,
+    salt: ByteArray,
+    iterations: Int,
+    algorithm: String = PBKDF2_ALGORITHM,
+    keyLengthBits: Int = PBKDF2_KEY_LENGTH_BITS
+): ByteArray {
+    val spec = PBEKeySpec(password.toCharArray(), salt, iterations, keyLengthBits)
+    val factory = SecretKeyFactory.getInstance(algorithm)
 
     return factory.generateSecret(spec).encoded
+}
+
+// app.py's registration used werkzeug's generate_password_hash before this
+// codebase existed, so forum.db can hold accounts in werkzeug's format:
+// "<method>$<salt>$<hex hash>", where method is "scrypt:n:r:p" (werkzeug's
+// current default) or "pbkdf2:<hash name>:<iterations>" (werkzeug's older
+// default, still recognized on read). Neither the salt nor the hash is
+// base64 here -- salt is the literal string bytes, and the hash is hex, per
+// werkzeug's own source (security.py: _hash_internal/gen_salt).
+private fun verifyWerkzeugHash(password: String, stored: String): Boolean {
+    val parts = stored.split("$", limit = 3)
+
+    if (parts.size != 3) {
+        return false
+    }
+
+    val (method, salt, hashHex) = parts
+    val expectedHash = hexToBytes(hashHex) ?: return false
+    val saltBytes = salt.toByteArray(Charsets.UTF_8)
+    val passwordBytes = password.toByteArray(Charsets.UTF_8)
+
+    val methodParts = method.split(":")
+    val algorithm = methodParts.firstOrNull() ?: return false
+    val args = methodParts.drop(1)
+
+    val actualHash = when (algorithm) {
+        "scrypt" -> {
+            val (n, r, p) = when {
+                args.isEmpty() -> Triple(32768, 8, 1)
+                args.size == 3 -> {
+                    val parsed = args.map { it.toIntOrNull() ?: return false }
+                    Triple(parsed[0], parsed[1], parsed[2])
+                }
+                else -> return false
+            }
+
+            SCrypt.generate(passwordBytes, saltBytes, n, r, p, expectedHash.size)
+        }
+
+        "pbkdf2" -> {
+            val hashName = args.getOrElse(0) { "sha256" }
+            val iterations = args.getOrNull(1)?.toIntOrNull() ?: WERKZEUG_DEFAULT_PBKDF2_ITERATIONS
+            val javaAlgorithm = pbkdf2AlgorithmFor(hashName) ?: return false
+
+            pbkdf2(password, saltBytes, iterations, javaAlgorithm, expectedHash.size * 8)
+        }
+
+        else -> return false
+    }
+
+    return MessageDigest.isEqual(actualHash, expectedHash)
+}
+
+// Matches werkzeug's DEFAULT_PBKDF2_ITERATIONS as of werkzeug 3.1. Only used
+// when a legacy hash's method field omits the iteration count, which
+// werkzeug's own format never actually does -- this is a defensive fallback,
+// not a value expected to be exercised against real data.
+private const val WERKZEUG_DEFAULT_PBKDF2_ITERATIONS = 1_000_000
+
+private fun pbkdf2AlgorithmFor(hashName: String): String? {
+    return when (hashName.lowercase()) {
+        "sha1" -> "PBKDF2WithHmacSHA1"
+        "sha256" -> "PBKDF2WithHmacSHA256"
+        "sha384" -> "PBKDF2WithHmacSHA384"
+        "sha512" -> "PBKDF2WithHmacSHA512"
+        else -> null
+    }
+}
+
+private fun hexToBytes(hex: String): ByteArray? {
+    if (hex.length % 2 != 0) {
+        return null
+    }
+
+    return try {
+        ByteArray(hex.length / 2) { i ->
+            hex.substring(i * 2, i * 2 + 2).toInt(16).toByte()
+        }
+    } catch (e: NumberFormatException) {
+        null
+    }
+}
+
+// This is the entry point the login route uses. It tries this codebase's
+// own format first, then falls back to werkzeug's format for an account
+// that predates this backend. A successful legacy verification immediately
+// re-hashes the password into this codebase's own format and overwrites the
+// stored value, so the account never touches the legacy path again after
+// its first successful login here.
+fun verifyAndMigratePassword(
+    connection: Connection,
+    userId: Long,
+    password: String,
+    stored: String
+): Boolean {
+    if (verifyPassword(password, stored)) {
+        return true
+    }
+
+    if (!verifyWerkzeugHash(password, stored)) {
+        return false
+    }
+
+    val migratedHash = hashPassword(password)
+
+    connection.prepareStatement(
+        "UPDATE users SET password = ? WHERE id = ?"
+    ).use { stmt ->
+        stmt.setString(1, migratedHash)
+        stmt.setLong(2, userId)
+        stmt.executeUpdate()
+    }
+
+    return true
 }

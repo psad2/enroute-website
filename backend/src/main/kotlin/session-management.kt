@@ -1,7 +1,7 @@
 import com.enroute.auth.createSession
 import com.enroute.auth.deleteSession
 import com.enroute.auth.hashPassword
-import com.enroute.auth.verifyPassword
+import com.enroute.auth.verifyAndMigratePassword
 
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
@@ -272,10 +272,13 @@ fun Route.loginRoute() {
                 }
             }
 
-            // This checks the password against the stored hash.
+            // This checks the password against the stored hash. A hash from
+            // before this backend existed (app.py's werkzeug-based hashing)
+            // still verifies here -- see verifyAndMigratePassword -- and
+            // gets rewritten into this codebase's own format on success.
             if (
                 user == null ||
-                !verifyPassword(password, user.passwordHash)
+                !verifyAndMigratePassword(connection, user.id, password, user.passwordHash)
             ) {
                 call.respond(
                     HttpStatusCode.Unauthorized,
