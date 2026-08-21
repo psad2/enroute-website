@@ -240,7 +240,9 @@ fun Route.loginRoute() {
             val id: Long,
             val username: String,
             val email: String,
-            val passwordHash: String
+            val passwordHash: String,
+            val banned: Boolean,
+            val timeoutUntil: String?
         )
 
         db().use { connection ->
@@ -251,7 +253,9 @@ fun Route.loginRoute() {
                     id,
                     username,
                     email,
-                    password
+                    password,
+                    banned,
+                    timeout_until
                 FROM users
                 WHERE LOWER(username) = LOWER(?)
                 LIMIT 1
@@ -264,7 +268,9 @@ fun Route.loginRoute() {
                             id = result.getLong("id"),
                             username = result.getString("username"),
                             email = result.getString("email"),
-                            passwordHash = result.getString("password")
+                            passwordHash = result.getString("password"),
+                            banned = result.getInt("banned") != 0,
+                            timeoutUntil = result.getString("timeout_until")
                         )
                     } else {
                         null
@@ -283,6 +289,26 @@ fun Route.loginRoute() {
                 call.respond(
                     HttpStatusCode.Unauthorized,
                     ErrorResponse("Invalid username or password")
+                )
+                return@post
+            }
+
+            if (user.banned) {
+                call.respond(
+                    HttpStatusCode.Forbidden,
+                    ErrorResponse("This account has been banned")
+                )
+                return@post
+            }
+
+            val timeoutUntil = user.timeoutUntil?.let {
+                runCatching { java.time.Instant.parse(it) }.getOrNull()
+            }
+
+            if (timeoutUntil != null && timeoutUntil.isAfter(java.time.Instant.now())) {
+                call.respond(
+                    HttpStatusCode.Forbidden,
+                    ErrorResponse("This account is timed out until $timeoutUntil")
                 )
                 return@post
             }

@@ -1,4 +1,4 @@
-python .\forum-backend\app.py
+python .\backend\app.py
 
 http://127.0.0.1:5000/
 
@@ -22,6 +22,6 @@ $env:MAIL_PASSWORD="yhpn bprd tiil oqyv"
 cloudflared tunnel --url http://127.0.0.1:5000
 cloudflared tunnel --url http://127.0.0.1:8000 <<fuer die api
 
-python forum-backend\app.py << server
+python backend\app.py << server
 
 dann: URL von cloudflared auf port 5000

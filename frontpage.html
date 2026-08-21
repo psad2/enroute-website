@@ -7,26 +7,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="public/style.css">
   <style>
-    :root{
-      --ink:#0A0D12;
-      --navy-deep:#0E1B2C;
-      --navy-mid:#132840;
-      --navy-glow: rgba(87,214,222,0.10);
-      --paper:#FFFFFF;
-      --paper-ink:#0E2A4D;
-      --paper-muted:#5C7292;
-      --amber:#6FA8DC;
-      --amber-soft: rgba(111,168,220,0.15);
-      --cyan:#C7DEF5;
-      --cyan-soft: rgba(199,222,245,0.15);
-      --text:#ECEFF3;
-      --text-muted:#8FA0B5;
-      --line: rgba(255,255,255,0.12);
-      --display: 'Space Grotesk', sans-serif;
-      --body: 'Inter', sans-serif;
-      --mono: 'IBM Plex Mono', monospace;
-    }
     *{ box-sizing:border-box; }
     html{ scroll-behavior:smooth; }
     body{
@@ -39,7 +21,7 @@
     }
     img{ max-width:100%; display:block; }
     a{ color:inherit; text-decoration:none; }
-    ::selection{ background:var(--amber); color:var(--ink); }
+    ::selection{ background:var(--accent); color:var(--ink); }
     a:focus-visible, button:focus-visible{
       outline:2px solid var(--cyan);
       outline-offset:3px;
@@ -50,7 +32,7 @@
       font-size:12px;
       letter-spacing:0.18em;
       text-transform:uppercase;
-      color:var(--amber);
+      color:var(--accent);
       display:flex;
       align-items:center;
       gap:10px;
@@ -59,7 +41,7 @@
     .eyebrow::before{
       content:"";
       width:22px; height:1px;
-      background:var(--amber);
+      background:var(--accent);
       display:inline-block;
     }
     .section-head{ max-width:640px; margin-bottom:56px; }
@@ -108,7 +90,7 @@
     /* ---------- top progress bar (mobile + always) ---------- */
     #route-progress-top{
       position:fixed; top:0; left:0; height:2px; width:0%;
-      background:linear-gradient(90deg,var(--amber),var(--cyan));
+      background:linear-gradient(90deg,var(--accent),var(--cyan));
       z-index:600;
       transition:width .05s linear;
     }
@@ -131,8 +113,8 @@
     .brand-badge{
       font-family:var(--mono); font-weight:600; font-size:12px;
       letter-spacing:.05em;
-      border:1px solid var(--amber);
-      color:var(--amber);
+      border:1px solid var(--accent);
+      color:var(--accent);
       padding:4px 7px;
       border-radius:3px;
     }
@@ -153,26 +135,10 @@
     }
     nav.tabs a:hover{ color:var(--text); }
     nav.tabs a:hover::after{ width:100%; }
-    .book-btn{
-      font-family:var(--mono); font-size:12px; letter-spacing:.06em; text-transform:uppercase;
-      color:var(--amber);
-      padding:4px 0; white-space:nowrap;
-      display:inline-flex; align-items:center; gap:8px;
-      position:relative;
-    }
-    .book-btn::after{
-      content:""; position:absolute; left:0; bottom:0; height:1px; width:100%;
-      background:var(--amber); transform:scaleX(0.35); transform-origin:left;
-      transition:transform .3s ease;
-    }
-    .book-btn:hover::after{ transform:scaleX(1); }
-    .book-btn .arrow{ transition:transform .3s ease; }
-    .book-btn:hover .arrow{ transform:translateX(3px); }
-    .nav-toggle{ display:none; }
-
     @media (max-width:900px){
       header{ padding:18px 20px; }
       nav.tabs{ display:none; }
+      .nav-toggle{ display:flex; }
     }
 
     /* ---------- hero ---------- */
@@ -214,22 +180,8 @@
       margin:0 0 34px;
       font-weight:400;
     }
-    .hero-tagline strong{ color:var(--amber); font-weight:600; }
+    .hero-tagline strong{ color:var(--accent); font-weight:600; }
     .hero-ctas{ display:flex; gap:36px; flex-wrap:wrap; }
-    .link-cta{
-      font-family:var(--mono); font-size:13px; letter-spacing:.08em; text-transform:uppercase;
-      display:inline-flex; align-items:center; gap:9px;
-      color:var(--text); position:relative; padding-bottom:6px;
-    }
-    .link-cta::after{
-      content:""; position:absolute; left:0; bottom:0; height:1px; width:100%;
-      background:currentColor; transform:scaleX(0.3); transform-origin:left;
-      transition:transform .35s cubic-bezier(.16,.8,.24,1);
-    }
-    .link-cta:hover::after{ transform:scaleX(1); }
-    .link-cta .arrow{ transition:transform .3s ease; }
-    .link-cta:hover .arrow{ transform:translateX(4px); }
-    .link-cta.primary{ color:var(--amber); }
 
     #hud{
       position:absolute; right:40px; bottom:96px; z-index:2;
@@ -291,12 +243,13 @@
     }
     table.fleet tbody tr:last-child td{ border-bottom:none; }
     table.fleet tbody tr{ transition:background .25s ease; border-left:2px solid transparent; }
-    table.fleet tbody tr:hover{ background:rgba(111,168,220,0.08); border-left:2px solid var(--amber); }
+    table.fleet tbody tr:hover{ background:rgba(111,168,220,0.08); border-left:2px solid var(--accent); }
     .plane-icon{ font-size:18px; color:var(--cyan); display:inline-block; transform:rotate(45deg); margin-right:12px; }
     .type-name{ font-family:var(--display); font-weight:600; font-size:16px; }
     .type-sub{ font-family:var(--mono); font-size:11.5px; color:var(--text-muted); margin-top:3px; }
     td.mono{ font-family:var(--mono); color:var(--text); }
     .fleet-note{ margin-top:22px; font-family:var(--mono); font-size:12px; color:var(--text-muted); }
+    .fleet-note .link-cta{ margin-left:6px; }
 
     /* ---------- crew ---------- */
     #crew{ background:var(--paper); color:var(--paper-ink); }
@@ -318,7 +271,7 @@
     }
     .avatar{
       width:52px; height:52px; border-radius:50%;
-      background:var(--navy-deep); color:var(--amber);
+      background:var(--navy-deep); color:var(--accent);
       display:flex; align-items:center; justify-content:center;
       font-family:var(--mono); font-weight:600; font-size:15px;
       margin-bottom:16px; border:1px solid rgba(14,42,77,0.14);
@@ -336,37 +289,19 @@
       display:grid; grid-template-columns:1.15fr 0.85fr; gap:70px; align-items:start;
     }
     @media (max-width:860px){ .about-grid{ grid-template-columns:1fr; gap:44px; } }
+    .about-title{
+      font-family:var(--display);
+      font-weight:700;
+      font-size:clamp(30px,3.6vw,44px);
+      line-height:1.1;
+      margin:0 0 24px;
+    }
     .about-copy p{ color:var(--text-muted); font-size:15.5px; margin:0 0 18px; max-width:480px; }
     .about-copy p:first-child{ color:var(--text); font-size:17px; }
     .stat-grid{ display:grid; grid-template-columns:1fr 1fr; gap:1px; background:var(--line); border:1px solid var(--line); }
     .stat{ background:var(--navy-deep); padding:26px 22px; }
-    .stat .num{ font-family:var(--display); font-weight:700; font-size:34px; color:var(--amber); line-height:1; }
+    .stat .num{ font-family:var(--display); font-weight:700; font-size:34px; color:var(--accent); line-height:1; }
     .stat .cap{ font-family:var(--mono); font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--text-muted); margin-top:10px; }
-
-    /* ---------- footer ---------- */
-    footer{ background:var(--ink); border-top:1px solid var(--line); padding:80px 40px 34px; }
-    .footer-grid{
-      display:grid; grid-template-columns:1.4fr 1fr 1fr 1.2fr; gap:50px; max-width:1180px; margin:0 auto 60px;
-    }
-    @media (max-width:820px){ .footer-grid{ grid-template-columns:1fr 1fr; } }
-    @media (max-width:520px){ .footer-grid{ grid-template-columns:1fr; } }
-    .footer-brand .brand-word{ font-size:20px; }
-    .footer-brand p{ color:var(--text-muted); font-size:13.5px; margin:16px 0 0; max-width:260px; }
-    .footer-col h4{
-      font-family:var(--mono); font-size:11px; letter-spacing:.12em; text-transform:uppercase;
-      color:var(--text-muted); margin:0 0 18px; font-weight:500;
-    }
-    .footer-col a{
-      display:block; font-size:14px; color:var(--text); margin-bottom:12px;
-      transition:color .2s ease;
-    }
-    .footer-col a:hover{ color:var(--amber); }
-    .footer-col .muted{ color:var(--text-muted); font-size:13px; }
-    .footer-bottom{
-      max-width:1180px; margin:0 auto; padding-top:26px; border-top:1px solid var(--line);
-      display:flex; justify-content:space-between; flex-wrap:wrap; gap:12px;
-      font-family:var(--mono); font-size:11.5px; color:var(--text-muted); letter-spacing:.03em;
-    }
 
     /* ---------- route rail (desktop signature element) ---------- */
     #route-rail{
@@ -380,7 +315,7 @@
     }
     #route-rail .fill{
       position:absolute; top:0; left:0; width:1px; height:0%;
-      background:linear-gradient(180deg,var(--cyan),var(--amber));
+      background:linear-gradient(180deg,var(--cyan),var(--accent));
       transition:height .05s linear;
     }
     .waypoint-node{
@@ -390,7 +325,7 @@
       transition:background .3s ease, border-color .3s ease, box-shadow .3s ease;
     }
     .waypoint-node.active{
-      background:var(--amber); border-color:var(--amber);
+      background:var(--accent); border-color:var(--accent);
       box-shadow:0 0 0 4px rgba(111,168,220,0.22);
     }
     .waypoint-label{
@@ -417,7 +352,7 @@
     <span class="brand-word">EN ROUTE</span>
   </a>
 
-  <nav class="tabs">
+  <nav class="tabs" id="site-nav">
     <a href="/fleet.html">Fleet</a>
     <a href="/crew.html">Crew</a>
     <a href="#about">About</a>
@@ -426,9 +361,13 @@
     <a href="/forums.html">Forum</a>
   </nav>
 
-  <a href="/" class="book-btn">
+  <a href="/" class="link-cta primary">
     Home <span class="arrow">→</span>
   </a>
+
+  <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Toggle navigation">
+    <span></span><span></span><span></span>
+  </button>
 </header>
 
 <section id="hero" data-waypoint="DEP">
@@ -575,7 +514,7 @@
 
     <p class="fleet-note reveal">
       Five aircraft types currently form the En Route fleet.
-      <a href="fleet.html" class="link-cta primary" style="margin-left:6px;">
+      <a href="fleet.html" class="link-cta primary">
         See full fleet specs <span class="arrow">→</span>
       </a>
     </p>
@@ -594,7 +533,6 @@
     </div>
     <div id="crew-list" class="crew-grid reveal-stagger">
       <p>Loading crew...</p>
-    </div>
       <div class="crew-card">
         <div class="avatar">AK</div>
         <div class="crew-name">Placeholder Name</div>
@@ -635,7 +573,7 @@
   <div class="container about-grid">
     <div class="reveal">
       <p class="eyebrow">About Us</p>
-      <h2 style="font-family:var(--display);font-weight:700;font-size:clamp(30px,3.6vw,44px);line-height:1.1;margin:0 0 24px;">Why we fly.</h2>
+      <h2 class="about-title">Why we fly.</h2>
       <div class="about-copy">
         <p>En Route started as a handful of friends chasing the same sunset across three different flight sims. Placeholder mission copy — replace with your airline's real story.</p>
         <p>We're not trying to be a real airline. We're trying to be the best version of a hobby: scheduled flights, a real roster, real training, and a community that shows up week after week.</p>
@@ -671,6 +609,7 @@
     </div>
     <div class="footer-col">
       <h4>Navigate</h4>
+      <a href="frontpage.html">Home</a>
       <a href="fleet.html">Fleet</a>
       <a href="crew.html">Crew</a>
       <a href="#about">About</a>
@@ -855,6 +794,8 @@
 
   loadCrew();
 </script>
+
+<script src="public/nav.js" defer></script>
 
 </body>
 </html>
