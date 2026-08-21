@@ -59,6 +59,7 @@ fun Application.module() {
 
         categoriesRoute()
         crewRoute()
+        healthRoute()
         meRoute()
         moderationRoute()
         postsRoute()
