@@ -1,274 +1,172 @@
-# En Route Website & Forum
-
-## 1. Introduction
-
-This repository contains the website and forum system for **En Route Virtual Airline**.
-
-En Route is a virtual airline project for flight simulation. The website provides information about the virtual airline and provides tools for pilots and staff.
-
-The forum is an integrated communication platform for the En Route community. It will allow users to create threads, write replies, manage profiles, send direct messages, and communicate with other users.
-
-The project is **currently work in progress**. Some functions are not complete, and some existing functions may not work correctly.
-
----
-
-## 2. Project Status
-
-**Status: Work in Progress**
-
-The project is under active development.
-
-The current priority is to fix critical problems before new features are added.
-
-The backend is also being rewritten from Python to Kotlin. The Kotlin backend will provide the main backend functions of the forum and website.
-
----
-
-## 3. Main Components
-
-### Website
-
-The website will provide:
-
-* En Route Virtual Airline information
-* Fleet information
-* Pilot information
-* Flight information
-* Recruitment information
-* User accounts
-* User profiles
-* Forum access
-* Other virtual airline functions
-
-### Forum
-
-The forum will provide:
-
-* Forum categories
-* Thread lists
-* Thread creation
-* Thread replies
-* Thread editing
-* Thread deletion
-* Post reporting
-* Thread locking
-* Thread moderation
-* User profiles
-* Direct messages
-* Notifications
-* Forum search
-
----
-
-## 4. Backend
-
-The backend is currently being rewritten in **Kotlin**.
-
-The goal is to create a stable and maintainable backend with clear separation between:
-
-* Authentication
-* Users
-* Forum
-* Moderation
-* Administration
-* Notifications
-* Direct messages
-* Reports
-
-The backend must also provide a clear permission system for different user roles.
-
----
-
-## 5. User Roles
-
-The forum will use three main roles:
-
-### User
-
-Normal forum users can:
-
-* Create threads
-* Reply to threads
-* Edit their own content where permitted
-* Delete their own content where permitted
-* Send direct messages
-* Edit their profile
-* Report posts
-
-### Moderator
-
-Moderators can perform moderation functions such as:
-
-* Review reports
-* Warn users
-* Timeout users
-* Ban users
-* Delete posts
-* Lock threads
-* Edit threads where permitted
-* Moderate forum content
-
-### Administrator
-
-Administrators have all moderator permissions and additional administration permissions.
-
-Administrators can:
-
-* Manage users
-* Manage permissions
-* Manage moderators
-* Manage forum settings
-* Manage categories
-* Perform administrative actions
-* Review and manage reports
-
----
-
-# 6. TODO
-
-## Priority 1 — Critical and High Priority
-
-* [ ] Fix all critical issues
-* [ ] Fix all high-priority issues
-* [ ] Improve backend stability
-* [ ] Fix existing broken functions
-* [ ] Improve error handling
-
-## Priority 2 — Kotlin Backend Rewrite
-
-The following backend functions must be rewritten in Kotlin:
-
-### Authentication
-
-* [ ] Authentication system
-* [ ] Signup
-* [ ] Login
-* [ ] Logout
-* [ ] Session handling
-
-### Forum
-
-* [ ] Thread list
-* [ ] Forum sorting by category
-* [ ] Creating threads
-* [ ] Getting threads
-* [ ] Replying to threads
-* [ ] Editing threads
-* [ ] Deleting threads
-* [ ] Searching threads
-* [ ] Locking threads
-* [ ] Editing moderated threads
-
-### Reactions
-
-* [ ] Reactions system
-* [ ] Add reactions
-* [ ] Remove reactions
-* [ ] Get reactions
-
-### Permissions
-
-* [ ] User permission system
-* [ ] Moderator permission system
-* [ ] Administrator permission system
-* [ ] Permission checks for protected actions
-
-### Moderation and Administration
-
-* [ ] Timeout system
-* [ ] Ban system
-* [ ] Warning system
-* [ ] Delete content
-* [ ] Moderation actions
-* [ ] Administration functions
-* [ ] Report system
-* [ ] Moderator-only report view
-* [ ] Administrator-only report view
-* [ ] Thread locking
-* [ ] Thread moderation
-* [ ] Thread editing
-
-### User Profiles
-
-* [ ] Profile pages
-* [ ] Profile editing
-* [ ] Public user information
-* [ ] User permissions display where required
-
-### Direct Messages
-
-* [ ] Direct message system
-* [ ] Send messages
-* [ ] Receive messages
-* [ ] Message history
-
-### Notifications
-
-* [ ] Website notification system
-* [ ] Direct message notifications
-* [ ] Quote notifications
-* [ ] Reply notifications
-* [ ] Do not send these notifications by email
-
-### Frontend
-
-* [ ] Static forum frontend
-* [ ] Forum category pages
-* [ ] Thread pages
-* [ ] User profile pages
-* [ ] Moderation interfaces
-* [ ] Administration interfaces
-* [ ] Error pages
-* [ ] Frontend error handling
-
----
-
-## 7. Error Handling
-
-The website and backend must provide clear error handling.
-
-The system should:
-
-* Return correct HTTP status codes
-* Provide useful error messages
-* Handle invalid requests
-* Handle missing resources
-* Handle authentication errors
-* Handle permission errors
-* Handle database errors
-* Prevent sensitive information from being returned to users
-
-Errors must not expose passwords, internal server information, database details, or other sensitive data.
-
----
-
-## 8. Development
-
-The project is actively developed and may contain incomplete code.
-
-Changes should be tested before they are merged into the main project.
-
-Critical and high-priority issues should be fixed before new large features are added.
-
----
-
-## 9. Project Goal
-
-The goal of this project is to provide En Route Virtual Airline with a complete website and forum platform.
-
-The final system should be:
-
-* Stable
-* Secure
-* Easy to maintain
-* Easy to use
-* Fast
-* Suitable for pilots and staff
-* Suitable for future development
-
-The forum should provide the main communication platform for the En Route Virtual Airline community while keeping moderation and administration tools separate from normal user functions.
-
----
-
-**En Route Virtual Airline**
-*Website & Forum — Work in Progress*
+# En Route Website — Kotlin Backend
+
+This is the **Kotlin/Ktor** rewrite of the forum backend, living in
+`backend/src/main/kotlin/`. It's a from-scratch reimplementation of the same
+API that `backend/app.py` (Flask) provides — same routes, same JSON shapes
+(snake_case keys), same SQLite database file — so the existing frontend
+(`forums.html`, `thread.html`, etc.) works against either one unchanged.
+
+
+## Tech Stack
+
+- **Language:** Kotlin (JVM), toolchain pinned to **JDK 17**
+- **Framework:** [Ktor](https://ktor.io/) 2.3.12 (Netty engine)
+- **Serialization:** `kotlinx.serialization` (JSON, snake_case keys to match
+  the Python version's `jsonify()` output)
+- **Database:** SQLite via `sqlite-jdbc` (same `forum.db` format as the
+  Python version)
+- **Markdown rendering:** `commonmark`
+- **HTML sanitizing:** `jsoup` (Kotlin's equivalent of Python's `bleach`)
+- **Password hashing:** `bouncycastle`
+- **Build tool:** Gradle (via the Gradle Wrapper, `./gradlew`), Gradle 8.7
+
+## Project Structure
+
+```
+backend/
+├── build.gradle.kts              # Dependencies & build config
+├── settings.gradle.kts            # Project name, JDK toolchain resolver
+├── gradlew / gradlew.bat          # Gradle wrapper — no local Gradle install needed
+└── src/
+    ├── main/kotlin/
+    │   ├── Application.kt         # Entry point: server setup, routing, error handling
+    │   ├── StaticRoutes.kt        # Serves the static HTML/CSS/JS/images (allowlisted)
+    │   ├── db-handler.kt          # SQLite connection + schema helpers
+    │   ├── health.kt              # GET /api/health
+    │   ├── session-management.kt  # register/login/logout (see warning above)
+    │   ├── me.kt                  # GET /api/me
+    │   ├── categories.kt          # GET /api/categories
+    │   ├── crew.kt                # GET /api/crew
+    │   ├── threads.kt             # Thread CRUD + pin/lock
+    │   ├── posts.kt               # Post edit/delete/reply
+    │   ├── reactions.kt           # Post reactions
+    │   ├── reports.kt             # User reports
+    │   ├── moderation.kt          # Moderator-only actions
+    │   ├── profile.kt             # User profile get/update/role change
+    │   ├── search.kt              # GET /api/search
+    │   ├── role.kt                # Role enum + permission checks
+    │   ├── rate-limit.kt          # In-memory fixed-window rate limiter
+    │   ├── request-helper.kt      # Shared request-parsing helpers
+    │   └── markdown-render.kt     # Markdown → sanitized HTML rendering
+    ├── test/kotlin/
+    │   ├── AuthRouteTest.kt
+    │   ├── HealthRouteTest.kt
+    │   └── StaticRoutesTest.kt
+    └── user_manager.py            # (leftover) Python admin GUI — see note below
+```
+
+
+## Requirements
+
+- **JDK 17** (the Gradle wrapper can auto-provision this via the
+  `foojay-resolver-convention` plugin in `settings.gradle.kts` — you don't
+  strictly need JDK 17 pre-installed, just *a* JDK for Gradle itself to run)
+- A Linux server with SSH access for deployment
+- Nginx (reverse proxy) + a domain (for HTTPS)
+- No separate database server — SQLite is a single file (`forum.db`)
+
+## Building
+
+From the `backend/` directory:
+
+```bash
+./gradlew build
+```
+
+This compiles the Kotlin sources, runs the test suite (`AuthRouteTest`,
+`HealthRouteTest`, `StaticRoutesTest`), and produces a runnable distribution
+under `build/`.
+
+To just run it directly without a full build:
+
+```bash
+./gradlew run
+```
+
+## Configuration (environment variables)
+
+| Variable | Default | Purpose |
+|---|---|---|
+| `PORT` | `5000` | Port the server listens on |
+| `PROJECT_ROOT` | current working directory | Root folder containing `frontpage.html`, `public/`, `images/`, etc. — **must** be set explicitly by whatever process launches the jar, since the default only works if you run it from the project root by hand |
+| `DATABASE_PATH` | `forum.db` | Path to the SQLite database file |
+
+The server always binds to `0.0.0.0` (all interfaces) — put it behind Nginx
+as a reverse proxy rather than exposing it directly to the internet.
+
+## Static File Serving
+
+Unlike the Python version — which serves *any* file under the project root
+by path — the Kotlin version uses an **explicit allowlist**
+(`StaticRoutes.kt`) of pages it will serve at the site root:
+
+```
+frontpage.html, fleet.html, crew.html, careers.html,
+register.html, forums.html, thread.html, route-map.html
+```
+
+plus the `public/` and `images/` directories in full. Anything not on that
+list gets a `403 Forbidden` — this is a deliberate hardening over the Python
+version, so backend source or local notes accidentally copied next to the
+HTML files can't be served by path guessing.
+
+## API
+
+Same endpoints as the Python backend — see the root project README for the
+full table. All JSON responses use snake_case keys (e.g. `thread_id`,
+`content_html`) to stay compatible with the existing frontend.
+
+## Deployment (systemd + Nginx)
+
+### 1. Build a distribution on the server (or build locally and copy it over)
+
+```bash
+cd backend
+./gradlew installDist
+```
+This produces a runnable app under `build/install/enroute-backend/`
+(a `bin/` launcher script plus `lib/` jars) — no JRE-juggling needed beyond
+having JDK 17 available at runtime.
+
+### 2. systemd service
+
+`/etc/systemd/system/enroute-backend.service`:
+```ini
+[Unit]
+Description=En Route Kotlin Backend
+After=network.target
+
+[Service]
+User=your_user
+WorkingDirectory=/var/www/enroute-website
+Environment=PROJECT_ROOT=/var/www/enroute-website
+Environment=DATABASE_PATH=/var/www/enroute-website/backend/forum.db
+Environment=PORT=5000
+ExecStart=/var/www/enroute-website/backend/build/install/enroute-backend/bin/enroute-backend
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+```
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable enroute-backend
+sudo systemctl start enroute-backend
+```
+
+### 3. Nginx reverse proxy
+
+Same as the Python version — proxy `/` to `127.0.0.1:5000` with the usual
+`X-Real-IP` / `X-Forwarded-For` / `X-Forwarded-Proto` headers, then Certbot
+for HTTPS. See the root README's Nginx section; only the upstream process
+changes (Gunicorn → the Ktor jar), not the Nginx config itself.
+
+## Testing
+
+```bash
+./gradlew test
+```
+
+Runs `AuthRouteTest`, `HealthRouteTest`, and `StaticRoutesTest` using
+`ktor-server-test-host` against an isolated test database (via the
+`DATABASE_PATH` override in `db-handler.kt`).
